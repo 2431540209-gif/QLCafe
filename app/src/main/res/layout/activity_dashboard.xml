@@ -27,24 +27,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardAvatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvGreeting">
-
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgAvatar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="64dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="16dp"
                 android:background="@android:color/white"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_account" />
-        </androidx.cardview.widget.CardView>
+                android:src="@drawable/ic_account"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                app:shapeAppearanceOverlay="@style/CircleImageView" />
 
         <TextView
             android:id="@+id/tvEmployeeName"
@@ -55,10 +48,10 @@
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/cardAvatar"
-            app:layout_constraintTop_toTopOf="@id/cardAvatar" />
+            app:layout_constraintStart_toEndOf="@id/imgAvatar"
+            app:layout_constraintTop_toTopOf="@id/imgAvatar" />
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardRoleBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +60,7 @@
             app:cardBackgroundColor="#4DFFFFFF"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:layout_constraintStart_toEndOf="@id/cardAvatar"
+            app:layout_constraintStart_toEndOf="@id/imgAvatar"
             app:layout_constraintTop_toBottomOf="@id/tvEmployeeName">
 
             <TextView
@@ -79,7 +72,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 android:textStyle="bold" />
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextClock
             android:id="@+id/textClock2"
@@ -108,7 +101,8 @@
             tools:layout_editor_absoluteX="25dp">
 
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDoanhThu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -120,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:padding="16dp">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnGoToRevenue"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -139,7 +133,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_money_24"
                             app:tint="@android:color/black" />
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:id="@+id/tvdoanhthu"
@@ -167,9 +161,10 @@
                         app:layout_constraintTop_toBottomOf="@id/tvdoanhthu" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDonhang"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -181,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:padding="16dp">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnGoToOrder"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -200,7 +195,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_menu"
                             app:tint="@android:color/black" />
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:id="@+id/tvdonhang"
@@ -228,9 +223,9 @@
                         app:layout_constraintTop_toBottomOf="@id/tvdonhang" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -296,7 +291,7 @@
                         app:layout_constraintTop_toBottomOf="@id/tvNotifTitle" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
