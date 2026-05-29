@@ -1,10 +1,9 @@
-package com.example.qlcafe // Nhớ giữ nguyên package của bạn
+package com.example.qlcafe
 
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,40 +11,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // ==========================================
-        // BƯỚC 1: ÁNH XẠ (Kết nối Kotlin với XML)
-        // ==========================================
-        val cardDoanhThu = findViewById<CardView>(R.id.cardDoanhThu)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        // Nhớ đảm bảo trong file activity_dashboard.xml bạn đã đặt id cho 2 chữ này nhé
-        val tvEmployeeName = findViewById<TextView>(R.id.tvEmployeeName)
-        val tvRoleName = findViewById<TextView>(R.id.tvRoleName)
-
-        // ==========================================
-        // BƯỚC 2: "CHỤP" DỮ LIỆU TỪ TRANG ĐĂNG NHẬP GỬI QUA
-        // ==========================================
-        // Lấy tên và chức vụ từ Intent. Nếu vì lý do nào đó bị lỗi không lấy được, nó sẽ mặc định là "Khách" và "BARISTA"
-        val tenNhanVien = intent.getStringExtra("NICKNAME") ?: "Khách"
-        val chucVuDangNhap = intent.getStringExtra("ROLE") ?: "BARISTA"
-
-        // ==========================================
-        // BƯỚC 3: ĐỔ DỮ LIỆU LÊN GIAO DIỆN VÀ PHÂN QUYỀN
-        // ==========================================
-        // 1. Đổi tên và chức vụ trên Header
-        tvEmployeeName.text = tenNhanVien
-        tvRoleName.text = chucVuDangNhap
-
-        // 2. Phân quyền ẩn/hiện thẻ doanh thu
-        if (chucVuDangNhap == "QUAN_LY" || chucVuDangNhap == "ADMIN") {
-            cardDoanhThu.visibility = View.VISIBLE
-        } else {
-            cardDoanhThu.visibility = View.GONE
+        loadFragment(FragmentTrangChu())
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                // R.id.nav_home là ID của nút trong file menu XML nha, bạn nhớ check lại ID cho khớp
+                R.id.nav_home -> {
+                    loadFragment(FragmentTrangChu())
+                    true
+                }
+                // Các nút khác tạm thời load lại Trang Chủ (Sau này bạn tạo FragmentTacVu thì thay vào đây)
+                R.id.nav_tasks -> {
+                    // loadFragment(FragmentTacVu())
+                    true
+                }
+                else -> false
+            }
         }
+    }
 
-        // Sự kiện bấm nút (Tạm thời để trống như bạn đang làm)
-        val btnGoToRevenue = findViewById<View>(R.id.btnGoToRevenue)
-        btnGoToRevenue.setOnClickListener {
-            // Viết code chuyển trang qua màn hình Doanh thu chi tiết ở đây
-        }
+    // Hàm thực hiện việc "rút băng, cắm băng" Fragment
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frame_container, fragment) // frame_container là cái ID của FrameLayout bên XML
+            .commit()
     }
 }
