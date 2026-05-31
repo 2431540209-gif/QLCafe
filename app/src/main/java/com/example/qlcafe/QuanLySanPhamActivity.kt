@@ -1,8 +1,10 @@
 package com.example.qlcafe
 
 import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qlcafe.R
 import com.example.qlcafe.database.DatabaseHelper
@@ -12,14 +14,28 @@ class QuanLySanPhamActivity : AppCompatActivity() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var edtTenMon: EditText
     private lateinit var edtGiaMon: EditText
+    private lateinit var edtMoTa: EditText        // Thêm mới
+    private lateinit var imgProduct: ImageView    // Thêm mới
+    private lateinit var btnChooseImg: Button    // Thêm mới
     private lateinit var btnThem: Button
     private lateinit var btnSua: Button
     private lateinit var btnXoa: Button
     private lateinit var lvSanPham: ListView
-    private lateinit var btnBack: ImageButton // Thêm khai báo nút quay lại
+    private lateinit var btnBack: ImageButton
 
     private var selectedId: Int = -1
+    private var selectedImageUri: String = "" // Biến lưu đường dẫn ảnh dạng chuỗi
     private lateinit var adapter: SimpleCursorAdapter
+
+    // Bộ công cụ mở thư viện ảnh hệ thống của Android
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri.toString()
+            imgProduct.setImageURI(uri) // Hiển thị ảnh lên giao diện
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,69 +43,87 @@ class QuanLySanPhamActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
-        // Ánh xạ các View từ XML
+        // Ánh xạ View
         edtTenMon = findViewById(R.id.edtTenMon)
         edtGiaMon = findViewById(R.id.edtGiaMon)
+        edtMoTa = findViewById(R.id.edtMoTa)
+        imgProduct = findViewById(R.id.imgProduct)
+        btnChooseImg = findViewById(R.id.btnChooseImg)
         btnThem = findViewById(R.id.btnThem)
         btnSua = findViewById(R.id.btnSua)
         btnXoa = findViewById(R.id.btnXoa)
         lvSanPham = findViewById(R.id.lvSanPham)
-        btnBack = findViewById(R.id.btnBack) // Ánh xạ nút quay lại
+        btnBack = findViewById(R.id.btnBack)
 
         hienThiDanhSach()
 
-        // Xử lý sự kiện khi nhấn nút Quay Lại để về trang Tác vụ
         btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed() // Đóng màn hình này và quay về FragmentTacVu
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        // Bắt sự kiện chọn ảnh
+        btnChooseImg.setOnClickListener {
+            imagePickerLauncher.launch("image/*") // Chỉ mở các file định dạng ảnh
         }
 
         // Thêm sản phẩm
         btnThem.setOnClickListener {
             val ten = edtTenMon.text.toString().trim()
             val giaStr = edtGiaMon.text.toString().trim()
+            val moTa = edtMoTa.text.toString().trim()
 
             if (ten.isEmpty() || giaStr.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Vui lòng nhập đầy đủ tên và giá!", Toast.LENGTH_SHORT).show()
             } else {
-                val kq = dbHelper.insertSanPham(ten, giaStr.toDouble())
+                val kq = dbHelper.insertSanPham(ten, giaStr.toDouble(), moTa, selectedImageUri)
                 if (kq > -1) {
-                    Toast.makeText(this, "Thêm thành công!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show()
                     lamMoiForm()
                     hienThiDanhSach()
                 }
             }
         }
 
-        // Chọn item trên ListView để chuẩn bị Sửa/Xóa
+        // Chọn item trên ListView để sửa/xóa
         lvSanPham.onItemClickListener = AdapterView.OnItemClickListener { _, view, _, id ->
             selectedId = id.toInt()
 
-            val tvTen = view.findViewById<TextView>(R.id.txtTenMon)
-            val tvGia = view.findViewById<TextView>(R.id.txtGiaMon)
+            val cursor = dbHelper.getAllSanPham()
+            if (cursor.moveToPosition(lvSanPham.getPositionForView(view))) {
+                // Đọc chính xác dữ liệu từ SQLite ra dựa vào vị trí click
+                val ten = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_TEN_MON))
+                val gia = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_GIA))
+                val moTa = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_MO_TA))
+                val hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_HINH_ANH))
 
-            edtTenMon.setText(tvTen.text.toString())
+                edtTenMon.setText(ten)
+                edtGiaMon.setText(String.format("%.0f", gia))
+                edtMoTa.setText(moTa)
 
-            val giaGoc = tvGia.text.toString()
-                .replace(" VNĐ", "")
-                .replace(".", "")
-                .replace(",", "")
-            edtGiaMon.setText(giaGoc)
+                selectedImageUri = hinhAnh
+                if (hinhAnh.isNotEmpty()) {
+                    imgProduct.setImageURI(Uri.parse(hinhAnh))
+                } else {
+                    imgProduct.setImageResource(android.R.drawable.ic_menu_gallery)
+                }
+            }
         }
 
         // Sửa sản phẩm
         btnSua.setOnClickListener {
             val ten = edtTenMon.text.toString().trim()
             val giaStr = edtGiaMon.text.toString().trim()
+            val moTa = edtMoTa.text.toString().trim()
 
             if (selectedId == -1) {
-                Toast.makeText(this, "Vui lòng chọn 1 sản phẩm từ danh sách trước!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Vui lòng chọn sản phẩm cần sửa!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (ten.isEmpty() || giaStr.isEmpty()) {
-                Toast.makeText(this, "Không được để trống thông tin sửa!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Thông tin không được bỏ trống!", Toast.LENGTH_SHORT).show()
             } else {
-                dbHelper.updateSanPham(selectedId, ten, giaStr.toDouble())
+                dbHelper.updateSanPham(selectedId, ten, giaStr.toDouble(), moTa, selectedImageUri)
                 Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
                 lamMoiForm()
                 hienThiDanhSach()
@@ -109,7 +143,6 @@ class QuanLySanPhamActivity : AppCompatActivity() {
         }
     }
 
-    // Đổ dữ liệu SQLite vào custom layout item_san_pham
     private fun hienThiDanhSach() {
         val cursor: Cursor = dbHelper.getAllSanPham()
 
@@ -140,6 +173,9 @@ class QuanLySanPhamActivity : AppCompatActivity() {
     private fun lamMoiForm() {
         edtTenMon.text.clear()
         edtGiaMon.text.clear()
+        edtMoTa.text.clear()
+        imgProduct.setImageResource(android.R.drawable.ic_menu_gallery)
+        selectedImageUri = ""
         selectedId = -1
     }
 }

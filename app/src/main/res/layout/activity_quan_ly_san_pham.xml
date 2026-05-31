@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="15dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -30,6 +30,30 @@
             android:textColor="@android:color/black"/>
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:id="@+id/imgProduct"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="#EEEEEE"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery" />
+
+        <Button
+            android:id="@+id/btnChooseImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="Chọn ảnh"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+    </LinearLayout>
+
     <EditText
         android:id="@+id/edtTenMon"
         android:layout_width="match_parent"
@@ -43,7 +67,15 @@
         android:layout_height="wrap_content"
         android:hint="Nhập giá tiền (VNĐ)"
         android:inputType="numberDecimal"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/edtMoTa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập mô tả sản phẩm"
+        android:inputType="textLongMessage"
+        android:layout_marginTop="8dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
