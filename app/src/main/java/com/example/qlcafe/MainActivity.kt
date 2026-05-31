@@ -11,30 +11,48 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
+        // Ánh xạ View
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
+        // Hiển thị Fragment Trang Chủ mặc định khi mới mở App
         loadFragment(FragmentTrangChu())
+
+        // Lắng nghe sự kiện chuyển Tab (Giữ nguyên cấu trúc gốc của bạn)
         bottomNav.setOnItemSelectedListener { item ->
+            var selectedFragment: Fragment? = null
+
             when (item.itemId) {
-                // R.id.nav_home là ID của nút trong file menu XML nha, bạn nhớ check lại ID cho khớp
                 R.id.nav_home -> {
-                    loadFragment(FragmentTrangChu())
-                    true
+                    selectedFragment = FragmentTrangChu()
                 }
-                // Các nút khác tạm thời load lại Trang Chủ (Sau này bạn tạo FragmentTacVu thì thay vào đây)
                 R.id.nav_tasks -> {
-                    // loadFragment(FragmentTacVu())
-                    true
+                    selectedFragment = FragmentTacVu()
                 }
-                else -> false
+                R.id.nav_notifications -> {
+                    selectedFragment = FragmentTrangChu()
+                }
+                R.id.nav_account -> {
+                    selectedFragment = FragmentTrangChu()
+                }
+            }
+
+            if (selectedFragment != null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, selectedFragment)
+                    .commit()
+                true
+            } else {
+                false
             }
         }
     }
 
-    // Hàm thực hiện việc "rút băng, cắm băng" Fragment
+    /**
+     * Hàm nạp Fragment vào FrameLayout (frame_container)
+     */
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_container, fragment) // frame_container là cái ID của FrameLayout bên XML
+            .replace(R.id.frame_container, fragment)
             .commit()
     }
 }
