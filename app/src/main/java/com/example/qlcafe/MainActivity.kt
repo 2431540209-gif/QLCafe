@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
+        setContentView(R.layout.layout_bottom_navigation)
 
         // Ánh xạ View
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
