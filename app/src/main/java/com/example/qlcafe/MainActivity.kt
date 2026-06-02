@@ -15,7 +15,10 @@ class MainActivity : AppCompatActivity() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
         // Hiển thị Fragment Trang Chủ mặc định khi mới mở App
-        loadFragment(FragmentTrangChu())
+        if (savedInstanceState == null) {
+            // Lúc này mới cho phép hiển thị Trang Chủ mặc định
+            loadFragment(FragmentTrangChu())
+        }
 
         // Lắng nghe sự kiện chuyển Tab (Giữ nguyên cấu trúc gốc của bạn)
         bottomNav.setOnItemSelectedListener { item ->
@@ -29,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                     selectedFragment = FragmentTacVu()
                 }
                 R.id.nav_notifications -> {
-                    selectedFragment = FragmentTrangChu()
+                    selectedFragment = FragmentThongBao()
                 }
                 R.id.nav_account -> {
                     selectedFragment = FragmentTrangChu()
