@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "QLCafe.db"
+        private const val DATABASE_NAME = "coffee_shop_db"
         // TĂNG VERSION LÊN 3: Để SQLite tự kích hoạt hàm onUpgrade cập nhật thêm cột mới
         private const val DATABASE_VERSION = 3
 

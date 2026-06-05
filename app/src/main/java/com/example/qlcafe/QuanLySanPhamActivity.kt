@@ -21,7 +21,7 @@ class QuanLySanPhamActivity : AppCompatActivity() {
     private lateinit var btnSua: Button
     private lateinit var btnXoa: Button
     private lateinit var lvSanPham: ListView
-    private lateinit var btnBack: ImageButton
+    private lateinit var btnBack: ImageView
 
     private var selectedId: Int = -1
     private var selectedImageUri: String = "" // Biến lưu đường dẫn ảnh dạng chuỗi
@@ -39,6 +39,7 @@ class QuanLySanPhamActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupTopBar("Quản lý Sản phẩm")
         setContentView(R.layout.activity_quan_ly_san_pham)
 
         dbHelper = DatabaseHelper(this)
