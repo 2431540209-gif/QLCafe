@@ -25,8 +25,8 @@ class FragmentTrangChu : Fragment(R.layout.fragment_trang_chu) {
         // 2. LẤY DỮ LIỆU TỪ INTENT
         // Fragment không có sẵn intent, phải gọi "requireActivity().intent" để xin từ MainActivity
         // ==========================================
-        val tenNhanVien = requireActivity().intent.getStringExtra("NICKNAME") ?: "Khách"
-        val chucVuDangNhap = requireActivity().intent.getStringExtra("ROLE") ?: "BARISTA"
+        val tenNhanVien = requireActivity().intent.getStringExtra("NICKNAME") ?: "ALIBABA"
+        val chucVuDangNhap = requireActivity().intent.getStringExtra("ROLE") ?: "ADMIN"
 
         // ==========================================
         // 3. ĐỔ DỮ LIỆU VÀ PHÂN QUYỀN (Giữ nguyên y hệt)

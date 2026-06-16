@@ -95,6 +95,23 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Nút Chấm Công nằm trên đầu danh sách cuộn -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChamCongHome"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                android:text="CHẤM CÔNG"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:backgroundTint="#D0770B"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_account"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                android:elevation="4dp" />
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDoanhThu"
                 android:layout_width="match_parent"

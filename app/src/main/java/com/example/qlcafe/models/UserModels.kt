@@ -19,10 +19,3 @@ data class UserInfo(
     val username: String,
     val role: String
 )
-
-data class ThongBao(
-    val iconId: Int,       // Hình ảnh (R.drawable.ic_coffee...)
-    val title: String,     // Tiêu đề
-    val content: String,   // Nội dung chi tiết
-    val time: String       // Thời gian
-)

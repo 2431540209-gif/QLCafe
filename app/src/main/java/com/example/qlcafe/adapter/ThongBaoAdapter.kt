@@ -1,20 +1,22 @@
 package com.example.qlcafe.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.qlcafe.R
 import com.example.qlcafe.models.ThongBao
+import com.example.qlcafe.R
 
-// Lớp Adapter nhận vào một danh sách thông báo
-class ThongBaoAdapter(private val dsThongBao: MutableList<ThongBao>) :
-    RecyclerView.Adapter<ThongBaoAdapter.ThongBaoViewHolder>() {
+// Chú ý: Tui thêm một cái onItemClick (Hàm callback) để bắt sự kiện chạm vào 1 dòng
+class ThongBaoAdapter(
+    private val dsThongBao: MutableList<ThongBao>,
+    private val onItemClick: (ThongBao) -> Unit,
+    private val onItemLongClick: (Int, ThongBao)-> Unit
+) : RecyclerView.Adapter<ThongBaoAdapter.ThongBaoViewHolder>() {
 
-    // 1. Lớp ViewHolder (Đại diện cho cái Bao bì item_thong_bao.xml)
-    // Nó giúp tìm sẵn các thành phần giao diện để lát nữa nhét chữ vào cho lẹ
     class ThongBaoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgIcon: ImageView = itemView.findViewById(R.id.imgIcon)
         val txtTitle: TextView = itemView.findViewById(R.id.txtTitle)
@@ -22,26 +24,42 @@ class ThongBaoAdapter(private val dsThongBao: MutableList<ThongBao>) :
         val txtTime: TextView = itemView.findViewById(R.id.txtTime)
     }
 
-    // 2. Nhiệm vụ 1 của Adapter: Tạo ra các Bao bì trống
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThongBaoViewHolder {
-        // Bơm cái giao diện item_thong_bao.xml lên
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_thong_bao, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_notification, parent, false)
         return ThongBaoViewHolder(view)
     }
 
-    // 3. Nhiệm vụ 2 của Adapter: Lấy dữ liệu nhét vào Bao bì
     override fun onBindViewHolder(holder: ThongBaoViewHolder, position: Int) {
-        val thongBaoHienTai = dsThongBao[position] // Lấy thông báo ở vị trí tương ứng
+        val tb = dsThongBao[position]
+        holder.txtTitle.text = tb.title
+        holder.txtContent.text = tb.content
+        holder.txtTime.text = tb.time
 
-        // Đổ dữ liệu vào các thẻ TextView, ImageView
-        holder.imgIcon.setImageResource(thongBaoHienTai.iconId)
-        holder.txtTitle.text = thongBaoHienTai.title
-        holder.txtContent.text = thongBaoHienTai.content
-        holder.txtTime.text = thongBaoHienTai.time
+        // Trang điểm: Đổi icon và màu sắc tùy theo Loại thông báo
+        when (tb.loai) {
+            "KHO" -> {
+                holder.imgIcon.setImageResource(android.R.drawable.ic_dialog_alert) // Icon cảnh báo
+                holder.imgIcon.setBackgroundColor(Color.parseColor("#FFCDD2")) // Nền đỏ nhạt
+            }
+            "SU_KIEN" -> {
+                holder.imgIcon.setImageResource(android.R.drawable.ic_menu_today) // Icon lịch
+                holder.imgIcon.setBackgroundColor(Color.parseColor("#BBDEFB")) // Nền xanh nhạt
+            }
+            "NHAN_SU" -> {
+                holder.imgIcon.setImageResource(android.R.drawable.ic_menu_myplaces) // Icon người
+                holder.imgIcon.setBackgroundColor(Color.parseColor("#C8E6C9")) // Nền xanh lá nhạt
+            }
+        }
+
+        // Bắt sự kiện Click: Khi người dùng bấm vào dòng này, nó sẽ ném dữ liệu tb ra ngoài
+        holder.itemView.setOnClickListener {
+            onItemClick(tb)
+        }
+        holder.itemView.setOnLongClickListener {
+            onItemLongClick(position, tb)
+            true
+        }
     }
 
-    // 4. Nhiệm vụ 3 của Adapter: Báo cáo xem trong kho có tổng cộng bao nhiêu món hàng
-    override fun getItemCount(): Int {
-        return dsThongBao.size
-    }
+    override fun getItemCount(): Int = dsThongBao.size
 }
