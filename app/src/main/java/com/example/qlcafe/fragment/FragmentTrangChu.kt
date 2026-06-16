@@ -1,10 +1,11 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import com.example.qlcafe.R
 
 // Khai báo Fragment này sẽ dùng giao diện fragment_trang_chu.xml
 class FragmentTrangChu : Fragment(R.layout.fragment_trang_chu) {

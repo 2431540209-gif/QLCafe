@@ -1,9 +1,11 @@
-package com.example.qlcafe
+package com.example.qlcafe.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView // Dòng này cực quan trọng
+import com.example.qlcafe.R
+import com.example.qlcafe.adapter.StaffAdapter
 
 class StaffActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

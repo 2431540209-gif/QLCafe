@@ -1,10 +1,11 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.example.qlcafe.R
 
 class FragmentProfile : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

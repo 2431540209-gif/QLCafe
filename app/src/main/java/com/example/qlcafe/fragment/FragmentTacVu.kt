@@ -1,4 +1,4 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qlcafe.activity.QuanLySanPhamActivity
+import com.example.qlcafe.R
+import com.example.qlcafe.adapter.TaskCategoryAdapter
+import com.example.qlcafe.adapter.TaskChildAdapter
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.TaskCategory
 import com.example.qlcafe.models.TaskItem
@@ -56,7 +60,13 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_sort_by_size)
         )
         if (role == "manager") {
-            orderTasks.add(TaskItem("huy_don_hang", "Duyệt hủy đơn", android.R.drawable.ic_menu_delete))
+            orderTasks.add(
+                TaskItem(
+                    "huy_don_hang",
+                    "Duyệt hủy đơn",
+                    android.R.drawable.ic_menu_delete
+                )
+            )
         }
         categories.add(TaskCategory("Đơn hàng", orderTasks))
 
@@ -65,8 +75,20 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             TaskItem("xem_menu", "Danh mục thực đơn", android.R.drawable.ic_menu_view)
         )
         if (role == "manager") {
-            productTasks.add(TaskItem("ql_san_pham", "Quản lý sản phẩm", android.R.drawable.ic_menu_manage))
-            productTasks.add(TaskItem("ql_kho", "Quản lý kho nguyên liệu", android.R.drawable.ic_menu_save))
+            productTasks.add(
+                TaskItem(
+                    "ql_san_pham",
+                    "Quản lý sản phẩm",
+                    android.R.drawable.ic_menu_manage
+                )
+            )
+            productTasks.add(
+                TaskItem(
+                    "ql_kho",
+                    "Quản lý kho nguyên liệu",
+                    android.R.drawable.ic_menu_save
+                )
+            )
         }
         categories.add(TaskCategory("Sản phẩm", productTasks))
 

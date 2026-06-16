@@ -1,8 +1,12 @@
-package com.example.qlcafe
+package com.example.qlcafe.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.qlcafe.R
+import com.example.qlcafe.fragment.FragmentTacVu
+import com.example.qlcafe.fragment.FragmentThongBao
+import com.example.qlcafe.fragment.FragmentTrangChu
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             loadFragment(FragmentTrangChu())
         }
 
-        // Lắng nghe sự kiện chuyển Tab (Giữ nguyên cấu trúc gốc của bạn)
+        // Lắng nghe sự kiện chuyển Tab
         bottomNav.setOnItemSelectedListener { item ->
             var selectedFragment: Fragment? = null
 

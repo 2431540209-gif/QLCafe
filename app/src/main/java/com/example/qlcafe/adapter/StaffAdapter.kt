@@ -1,10 +1,11 @@
-package com.example.qlcafe
+package com.example.qlcafe.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qlcafe.R
 
 class StaffAdapter(private val list: List<String>) : RecyclerView.Adapter<StaffAdapter.ViewHolder>() {
 

@@ -1,4 +1,4 @@
-package com.example.qlcafe
+package com.example.qlcafe.activity
 
 import android.database.Cursor
 import android.net.Uri
@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qlcafe.R
 import com.example.qlcafe.database.DatabaseHelper
+import com.example.qlcafe.utils.setupTopBar
 
 class QuanLySanPhamActivity : AppCompatActivity() {
 

@@ -1,13 +1,14 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.example.qlcafe.models.ThongBao
 import androidx.recyclerview.widget.LinearLayoutManager
-// Tí nữa có xài class nào thêm thì cứ Alt + Enter nhé!
+import androidx.recyclerview.widget.RecyclerView
+import com.example.qlcafe.R
+import com.example.qlcafe.adapter.ThongBaoAdapter
+import com.example.qlcafe.models.ThongBao
 
 class FragmentThongBao : Fragment(R.layout.fragment_thong_bao) {
     // R.layout.fragment_thong_bao là cái file giao diện XML của bạn

@@ -1,11 +1,12 @@
-package com.example.qlcafe
-// Khuôn mẫu để chứa thông tin của 1 cái thông báo
+package com.example.qlcafe.adapter
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qlcafe.R
 import com.example.qlcafe.models.ThongBao
 
 // Lớp Adapter nhận vào một danh sách thông báo
