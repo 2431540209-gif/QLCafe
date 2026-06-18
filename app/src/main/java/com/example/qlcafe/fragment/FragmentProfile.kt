@@ -1,44 +1,39 @@
 package com.example.qlcafe.fragment
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import com.example.qlcafe.R
 
-class FragmentProfile : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Đảm bảo tên file layout ở đây khớp với tên file XML của bạn
-        setContentView(R.layout.activity_profile)
+class FragmentProfile : Fragment(R.layout.activity_profile) {
 
-        val cardIds = listOf(
-            R.id.cardPassword, R.id.cardStaff, R.id.cardInventory,
-            R.id.cardReceipt, R.id.cardNotification, R.id.cardSettings
-        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        cardIds.forEach { id ->
-            val card = findViewById<CardView>(id)
+        // Ánh xạ đầy đủ 6 CardView
+        val cardPassword = view.findViewById<CardView>(R.id.cardPassword)
+        val cardStaff = view.findViewById<CardView>(R.id.cardStaff)
+        val cardInventory = view.findViewById<CardView>(R.id.cardInventory)
+        val cardReceipt = view.findViewById<CardView>(R.id.cardReceipt)
+        val cardNotification = view.findViewById<CardView>(R.id.cardNotification)
+        val cardSetting = view.findViewById<CardView>(R.id.cardSetting)
+        val btnLogout = view.findViewById<Button>(R.id.btnLogout)
+
+        // Thiết lập sự kiện Click
+        val cards = listOf(cardPassword, cardStaff, cardInventory, cardReceipt, cardNotification, cardSetting)
+        val names = listOf("Đổi mật khẩu", "Nhân viên", "Kho vật tư", "Hóa đơn", "Thông báo", "Cài đặt")
+
+        cards.forEachIndexed { index, card ->
             card?.setOnClickListener {
-                when (id) {
-                    R.id.cardPassword -> showToast("Mở Đổi mật khẩu")
-                    R.id.cardStaff -> showToast("Mở Quản lý nhân viên")
-                    R.id.cardInventory -> showToast("Mở Kho vật tư")
-                    R.id.cardReceipt -> showToast("Mở Hóa đơn")
-                    R.id.cardNotification -> showToast("Mở Thông báo")
-                    R.id.cardSettings -> showToast("Mở Cài đặt")
-                }
+                Toast.makeText(context, "Mở: ${names[index]}", Toast.LENGTH_SHORT).show()
             }
         }
 
-        findViewById<Button>(R.id.btnLogout)?.setOnClickListener {
-            showToast("Đã đăng xuất")
-            finish()
+        btnLogout?.setOnClickListener {
+            Toast.makeText(context, "Đã đăng xuất hệ thống", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
