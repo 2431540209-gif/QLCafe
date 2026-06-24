@@ -23,16 +23,13 @@ class FragmentTrangChu : Fragment(R.layout.fragment_trang_chu) {
 
         // ==========================================
         // 2. LẤY DỮ LIỆU TỪ INTENT
-        // Fragment không có sẵn intent, phải gọi "requireActivity().intent" để xin từ MainActivity
         // ==========================================
         val tenNhanVien = requireActivity().intent.getStringExtra("NICKNAME") ?: "ALIBABA"
         val chucVuDangNhap = requireActivity().intent.getStringExtra("ROLE") ?: "ADMIN"
 
-        // ==========================================
-        // 3. ĐỔ DỮ LIỆU VÀ PHÂN QUYỀN (Giữ nguyên y hệt)
-        // ==========================================
-        tvEmployeeName.text = tenNhanVien
-        tvRoleName.text = chucVuDangNhap
+        // Đảm bảo chữ in hoa để khớp với giao diện Alibaba
+        tvEmployeeName.text = tenNhanVien.uppercase()
+        tvRoleName.text = chucVuDangNhap.uppercase()
 
         if (chucVuDangNhap == "QUAN_LY" || chucVuDangNhap == "ADMIN") {
             cardDoanhThu.visibility = View.VISIBLE

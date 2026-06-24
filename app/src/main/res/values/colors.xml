@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_bg">#1A1A1A</color>
+    <color name="card_bg">#2D2D2D</color>
+    <color name="orange_main">#D84315</color>
+    <color name="status_pending">#FF9800</color>
+    <color name="status_processing">#2196F3</color>
+    <color name="status_completed">#4CAF50</color>
+    <color name="status_cancelled">#F44336</color>
+    <color name="text_grey">#AAAAAA</color>
+    <color name="text_dark_grey">#888888</color>
 </resources>
