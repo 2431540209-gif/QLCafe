@@ -42,6 +42,9 @@ class TaoDonHangFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_tao_don_hang, container, false)
         
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle.text = getString(R.string.create_new_order)
+        
         etCustomerName = view.findViewById(R.id.etCustomerName)
         spinnerTable = view.findViewById(R.id.spinnerTable)
         rvProducts = view.findViewById(R.id.rvProductSelection)

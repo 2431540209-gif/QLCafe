@@ -35,6 +35,9 @@ class DanhSachDonHangFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_danh_sach_don_hang, container, false)
 
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle.text = getString(R.string.order_list)
+
         tvDisplayCount = view.findViewById(R.id.tvDisplayStatsCount)
         tvDisplayLabel = view.findViewById(R.id.tvDisplayStatsLabel)
         rvOrders = view.findViewById(R.id.rvOrders)
@@ -49,7 +52,8 @@ class DanhSachDonHangFragment : Fragment() {
         setupTabs()
         observeViewModel()
 
-        view.findViewById<View>(R.id.btnBack).setOnClickListener {
+        val btnBack = view.findViewById<View>(R.id.btnBack)
+        btnBack.setOnClickListener {
             requireActivity().finish()
         }
 
