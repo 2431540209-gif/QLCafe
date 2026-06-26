@@ -106,6 +106,14 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
                 val intent = Intent(requireContext(), QuanLySanPhamActivity::class.java)
                 startActivity(intent)
             }
+            "ql_kho" ->{
+                // Mở màn hình Quản lí kho
+                val intent = Intent(requireContext(), QLKhoActivity::class.java)
+                // Truyền quyền của người dùng sang màn hình quản lí kho
+                intent.putExtra("ROLE", sessionManager.getUserRole())
+
+                startActivity(intent)
+            }
             "tao_don_hang" -> {
                 Toast.makeText(requireContext(), "Mở màn hình tạo đơn hàng mới", Toast.LENGTH_SHORT).show()
             }

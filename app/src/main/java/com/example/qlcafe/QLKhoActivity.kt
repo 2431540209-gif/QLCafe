@@ -5,12 +5,17 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Space
 import androidx.appcompat.app.AppCompatActivity
-
-class QLKho : AppCompatActivity() {
+import android.widget.ImageView
+class QLKhoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qlkho)
+
+        val btnMenu = findViewById<ImageView>(R.id.btnMenu)
+        btnMenu.setOnClickListener {
+            finish()
+        }
 
         val layoutNhapKho =
             findViewById<LinearLayout>(R.id.layoutNhapKho)

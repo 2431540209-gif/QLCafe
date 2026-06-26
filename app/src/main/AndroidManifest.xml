@@ -28,6 +28,12 @@
             android:label="Quản Lý Sản Phẩm"
             android:theme="@style/Theme.QLCafe" />
 
+        <activity
+            android:name=".QLKhoActivity"
+            android:exported="false"
+            android:label="Quản Lý Kho"
+            android:theme="@style/Theme.QLCafe" />
+
     </application>
 
 </manifest>
