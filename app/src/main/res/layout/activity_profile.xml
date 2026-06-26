@@ -3,80 +3,74 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F0F0">
+    android:background="#F2F5F9"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hồ sơ cá nhân"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            android:layout_marginBottom="16dp"/>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Đổi mật khẩu" android:textSize="16sp" />
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView android:id="@+id/tvEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="📧 admin@cafe.com" android:textColor="#1A1A1A" android:textSize="16sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvID" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🆔 NV: 001" android:layout_marginTop="8dp" android:textColor="#666666" android:textSize="14sp"/>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardStaff"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Quản lý nhân viên" android:textSize="16sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thao tác nhanh" android:textStyle="bold" android:textSize="16sp" android:textColor="#666666" android:layout_marginBottom="12dp"/>
+
+        <androidx.cardview.widget.CardView android:id="@+id/cardPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Đổi mật khẩu" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_calendar_lock_24" app:drawableTint="#FF9500"/>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardInventory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Kho vật tư" android:textSize="16sp" />
+        <androidx.cardview.widget.CardView android:id="@+id/cardStaff" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Nhân viên" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_article_person_24" app:drawableTint="#34C759"/>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardReceipt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Hóa đơn" android:textSize="16sp" />
+        <androidx.cardview.widget.CardView android:id="@+id/cardInventory" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Kho nguyên liệu " android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_box_24" app:drawableTint="#5856D6"/>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardNotification"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Thông báo" android:textSize="16sp" />
+        <androidx.cardview.widget.CardView android:id="@+id/cardReceipt" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Hóa đơn" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_checklist_24" app:drawableTint="#007AFF"/>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardSettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:text="Cài đặt" android:textSize="16sp" />
+        <androidx.cardview.widget.CardView android:id="@+id/cardNotification" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Thông báo" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_circle_notifications_24" app:drawableTint="#FF3B30"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView android:id="@+id/cardSetting" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Cài đặt" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_box_24" app:drawableTint="#8E8E93"/>
         </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
+            android:text="ĐĂNG XUẤT"
+            android:backgroundTint="#FF3B30"
+            android:textColor="#FFFFFF"
             android:layout_marginTop="20dp"
-            android:text="Đăng xuất" />
-
+            android:textStyle="bold"
+            app:cornerRadius="12dp"/>
     </LinearLayout>
 </ScrollView>

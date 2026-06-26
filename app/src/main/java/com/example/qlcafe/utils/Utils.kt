@@ -1,8 +1,9 @@
-package com.example.qlcafe
+package com.example.qlcafe.utils
 
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.qlcafe.R
 
 // Tạo một "hàm mở rộng" gắn thẳng vào tất cả các Activity
 fun AppCompatActivity.setupTopBar(tieuDe: String) {

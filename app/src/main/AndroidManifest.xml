@@ -11,8 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QLCafe">
 
+        <!-- MÀN HÌNH CHÍNH CỦA APP -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.QLCafe">
@@ -22,11 +23,24 @@
             </intent-filter>
         </activity>
 
+        <!-- Các Activity khác -->
         <activity
-            android:name=".QuanLySanPhamActivity"
+            android:name=".activity.QuanLySanPhamActivity"
             android:exported="false"
-            android:label="Quản Lý Sản Phẩm"
-            android:theme="@style/Theme.QLCafe" />
+            android:label="Quản Lý Sản Phẩm" />
+
+        <activity
+            android:name=".activity.QuanLyDonHangActivity"
+            android:exported="false"
+            android:label="Quản Lý Đơn Hàng" />
+
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false" />
 
         <activity
             android:name=".QLKhoActivity"

@@ -1,4 +1,4 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qlcafe.activity.QuanLyDonHangActivity
+import com.example.qlcafe.activity.QuanLySanPhamActivity
+import com.example.qlcafe.R
+import com.example.qlcafe.adapter.TaskCategoryAdapter
+import com.example.qlcafe.adapter.TaskChildAdapter
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.TaskCategory
 import com.example.qlcafe.models.TaskItem
@@ -20,7 +25,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_task, container, false)
 
@@ -55,9 +60,6 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             TaskItem("tao_don_hang", "Tạo đơn mới", android.R.drawable.ic_menu_add),
             TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_sort_by_size)
         )
-        if (role == "manager") {
-            orderTasks.add(TaskItem("huy_don_hang", "Duyệt hủy đơn", android.R.drawable.ic_menu_delete))
-        }
         categories.add(TaskCategory("Đơn hàng", orderTasks))
 
         // 2. NHÓM SẢN PHẨM
@@ -65,8 +67,20 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             TaskItem("xem_menu", "Danh mục thực đơn", android.R.drawable.ic_menu_view)
         )
         if (role == "manager") {
-            productTasks.add(TaskItem("ql_san_pham", "Quản lý sản phẩm", android.R.drawable.ic_menu_manage))
-            productTasks.add(TaskItem("ql_kho", "Quản lý kho nguyên liệu", android.R.drawable.ic_menu_save))
+            productTasks.add(
+                TaskItem(
+                    "ql_san_pham",
+                    "Quản lý sản phẩm",
+                    android.R.drawable.ic_menu_manage
+                )
+            )
+            productTasks.add(
+                TaskItem(
+                    "ql_kho",
+                    "Quản lý kho nguyên liệu",
+                    android.R.drawable.ic_menu_save
+                )
+            )
         }
         categories.add(TaskCategory("Sản phẩm", productTasks))
 
@@ -102,7 +116,6 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
     override fun onTaskClick(item: TaskItem) {
         when (item.id) {
             "ql_san_pham" -> {
-                // KÍCH HOẠT DI CHUYỂN SANG MÀN HÌNH QUẢN LÝ SẢN PHẨM THỰC TẾ
                 val intent = Intent(requireContext(), QuanLySanPhamActivity::class.java)
                 startActivity(intent)
             }
@@ -115,7 +128,14 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
                 startActivity(intent)
             }
             "tao_don_hang" -> {
-                Toast.makeText(requireContext(), "Mở màn hình tạo đơn hàng mới", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+                intent.putExtra("START_TAB", "CREATE")
+                startActivity(intent)
+            }
+            "ds_don_hang" -> {
+                val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+                intent.putExtra("START_TAB", "LIST")
+                startActivity(intent)
             }
             "xem_menu" -> {
                 Toast.makeText(requireContext(), "Mở màn hình danh mục menu", Toast.LENGTH_SHORT).show()

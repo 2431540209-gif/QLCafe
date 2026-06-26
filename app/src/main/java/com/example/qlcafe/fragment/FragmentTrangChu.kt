@@ -1,10 +1,11 @@
-package com.example.qlcafe
+package com.example.qlcafe.fragment
 
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import com.example.qlcafe.R
 
 // Khai báo Fragment này sẽ dùng giao diện fragment_trang_chu.xml
 class FragmentTrangChu : Fragment(R.layout.fragment_trang_chu) {
@@ -22,16 +23,13 @@ class FragmentTrangChu : Fragment(R.layout.fragment_trang_chu) {
 
         // ==========================================
         // 2. LẤY DỮ LIỆU TỪ INTENT
-        // Fragment không có sẵn intent, phải gọi "requireActivity().intent" để xin từ MainActivity
         // ==========================================
-        val tenNhanVien = requireActivity().intent.getStringExtra("NICKNAME") ?: "Khách"
-        val chucVuDangNhap = requireActivity().intent.getStringExtra("ROLE") ?: "BARISTA"
+        val tenNhanVien = requireActivity().intent.getStringExtra("NICKNAME") ?: "ALIBABA"
+        val chucVuDangNhap = requireActivity().intent.getStringExtra("ROLE") ?: "ADMIN"
 
-        // ==========================================
-        // 3. ĐỔ DỮ LIỆU VÀ PHÂN QUYỀN (Giữ nguyên y hệt)
-        // ==========================================
-        tvEmployeeName.text = tenNhanVien
-        tvRoleName.text = chucVuDangNhap
+        // Đảm bảo chữ in hoa để khớp với giao diện Alibaba
+        tvEmployeeName.text = tenNhanVien.uppercase()
+        tvRoleName.text = chucVuDangNhap.uppercase()
 
         if (chucVuDangNhap == "QUAN_LY" || chucVuDangNhap == "ADMIN") {
             cardDoanhThu.visibility = View.VISIBLE
