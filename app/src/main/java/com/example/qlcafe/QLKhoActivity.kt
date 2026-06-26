@@ -12,8 +12,8 @@ class QLKhoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qlkho)
 
-        val btnMenu = findViewById<ImageView>(R.id.btnMenu)
-        btnMenu.setOnClickListener {
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
+        btnBack.setOnClickListener {
             finish()
         }
 

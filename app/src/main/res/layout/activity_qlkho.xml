@@ -5,29 +5,7 @@
     android:orientation="vertical"
     android:background="#F8F6F4">
 
-    <!-- Thanh tiêu đề -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="#4E250F">
-
-        <ImageView
-            android:id="@+id/btnMenu"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_input_get"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Quản lý kho"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_centerInParent="true"/>
-    </RelativeLayout>
+    <include layout="@layout/layout_top_bar" />
 
     <!-- Ô tìm kiếm -->
     <LinearLayout
@@ -92,6 +70,7 @@
             android:backgroundTint="#FFFFFF"/>
 
     </LinearLayout>
+
     <!-- Tiêu đề danh sách -->
     <TextView
         android:layout_width="wrap_content"
