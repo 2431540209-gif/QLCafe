@@ -3,7 +3,7 @@ package com.example.qlcafe.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.qlcafe.models.Order
-import com.example.qlcafe.models.OrderRepository
+import com.example.qlcafe.repository.OrderRepository
 import com.example.qlcafe.models.OrderStatus
 
 class OrderViewModel : ViewModel() {
