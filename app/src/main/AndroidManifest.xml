@@ -43,7 +43,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".QLKhoActivity"
+            android:name=".activity.QLKhoActivity"
             android:exported="false"
             android:label="Quản Lý Kho"
             android:theme="@style/Theme.QLCafe" />
