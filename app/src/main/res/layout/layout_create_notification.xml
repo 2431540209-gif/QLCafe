@@ -15,31 +15,6 @@
         android:textColor="#D0770B"
         android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Phân loại:"/>
-    <Spinner
-        android:id="@+id/spnLoaiThongBao"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginBottom="12dp"/>
-    <LinearLayout
-        android:id="@+id/layoutNguoiNhan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-        <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Gửi riêng cho:"/>
-        <Spinner
-            android:id="@+id/spnNguoiNhan"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="12dp"/>
-    </LinearLayout>
     <EditText
         android:id="@+id/edtTieuDe"
         android:layout_width="match_parent"

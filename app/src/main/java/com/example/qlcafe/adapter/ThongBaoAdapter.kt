@@ -45,10 +45,6 @@ class ThongBaoAdapter(
                 holder.imgIcon.setImageResource(android.R.drawable.ic_menu_today) // Icon lịch
                 holder.imgIcon.setBackgroundColor(Color.parseColor("#BBDEFB")) // Nền xanh nhạt
             }
-            "NHAN_SU" -> {
-                holder.imgIcon.setImageResource(android.R.drawable.ic_menu_myplaces) // Icon người
-                holder.imgIcon.setBackgroundColor(Color.parseColor("#C8E6C9")) // Nền xanh lá nhạt
-            }
         }
 
         // Bắt sự kiện Click: Khi người dùng bấm vào dòng này, nó sẽ ném dữ liệu tb ra ngoài
