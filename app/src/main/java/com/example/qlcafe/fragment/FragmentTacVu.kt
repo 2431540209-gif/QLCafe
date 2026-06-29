@@ -13,6 +13,7 @@ import com.example.qlcafe.activity.QuanLyDonHangActivity
 import com.example.qlcafe.activity.QuanLySanPhamActivity
 import com.example.qlcafe.QLKhoActivity
 import com.example.qlcafe.R
+import com.example.qlcafe.activity.AttendanceListActivity
 import com.example.qlcafe.adapter.TaskCategoryAdapter
 import com.example.qlcafe.adapter.TaskChildAdapter
 import com.example.qlcafe.auth.SessionManager
@@ -140,6 +141,10 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             }
             "xem_menu" -> {
                 Toast.makeText(requireContext(), "Mở màn hình danh mục menu", Toast.LENGTH_SHORT).show()
+            }
+            "bo_sung_cong" ->{
+                val intent = Intent(requireContext(), AttendanceListActivity::class.java)
+                startActivity(intent)
             }
             else -> {
                 Toast.makeText(requireContext(), "Bạn vừa nhấn: ${item.title}", Toast.LENGTH_SHORT).show()

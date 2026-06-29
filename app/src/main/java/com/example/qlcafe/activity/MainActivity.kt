@@ -16,11 +16,6 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        // Reset dữ liệu mặc định để luôn hiện ALIBABA - ADMIN
-        if (intent.getStringExtra("NICKNAME") == null) {
-            intent.putExtra("NICKNAME", "ALIBABA")
-            intent.putExtra("ROLE", "ADMIN")
-        }
 
         // Luôn mở Trang chủ khi khởi động
         if (savedInstanceState == null) {

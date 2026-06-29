@@ -5,17 +5,14 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Space
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.ImageView
+import com.example.qlcafe.utils.setupTopBar
+
 class QLKhoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qlkho)
-
-        val btnBack = findViewById<ImageView>(R.id.btnBack)
-        btnBack.setOnClickListener {
-            finish()
-        }
+        setupTopBar("Quản lý kho")
 
         val layoutNhapKho =
             findViewById<LinearLayout>(R.id.layoutNhapKho)

@@ -7,11 +7,15 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.qlcafe.R
+import com.example.qlcafe.auth.SessionManager
 
 class FragmentProfile : Fragment(R.layout.activity_profile) {
 
+    private lateinit var sessionManager: SessionManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sessionManager = SessionManager(requireContext())
 
         // Ánh xạ đầy đủ 6 CardView
         val cardPassword = view.findViewById<CardView>(R.id.cardPassword)
@@ -33,7 +37,11 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         }
 
         btnLogout?.setOnClickListener {
-            Toast.makeText(context, "Đã đăng xuất hệ thống", Toast.LENGTH_SHORT).show()
+            // 1. Xóa sạch dữ liệu phiên đăng nhập
+            sessionManager.logoutUser()
+
+            Toast.makeText(context, "Đã đăng xuất an toàn!", Toast.LENGTH_SHORT).show()
+
         }
     }
 }

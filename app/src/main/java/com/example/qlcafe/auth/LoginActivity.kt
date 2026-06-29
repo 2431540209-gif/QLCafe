@@ -7,53 +7,55 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qlcafe.activity.MainActivity
 import com.example.qlcafe.R
+import com.example.qlcafe.repository.UserRepository
 import com.google.android.material.textfield.TextInputEditText
 
 class LoginActivity : AppCompatActivity() {
+    private val userRepository = UserRepository()
+    private lateinit var sessionManager: SessionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        sessionManager = SessionManager(this)
+
+        // KIỂM TRA ĐĂNG NHẬP: Nếu đã có Session thì bay thẳng vào Trang Chủ
+        if (sessionManager.isLoggedIn()) {
+            goToMainActivity()
+            return
+        }
+
         val etUsername = findViewById<TextInputEditText>(R.id.etUsername)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
-        // val tvGoToRegister = findViewById<TextView>(R.id.tvGoToRegister) // Nhớ thêm ID này bên XML
+        // val tvGoToRegister = findViewById<TextView>(R.id.tvGoToRegister)
 
         btnLogin.setOnClickListener {
-            val inputUser = etUsername.text.toString().trim()
+            val inputPhone = etUsername.text.toString().trim()
             val inputPass = etPassword.text.toString().trim()
 
-            if (inputUser.isEmpty() || inputPass.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập tài khoản và mật khẩu!", Toast.LENGTH_SHORT).show()
+            if (inputPhone.isEmpty() || inputPass.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập số điện thoại và mật khẩu!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // ==== LẤY DỮ LIỆU TỪ BỘ NHỚ RA ĐỂ KIỂM TRA ====
-            val sharedPreferences = getSharedPreferences("FakeDatabase", MODE_PRIVATE)
-            val savedUser = sharedPreferences.getString("saved_username", "")
-            val savedPass = sharedPreferences.getString("saved_password", "")
-            val savedRole = sharedPreferences.getString("saved_role", "BARISTA")
+            // XÓA FAKE DATABASE VÀ GỌI API THẬT
+            userRepository.login(inputPhone, inputPass) {
+                isSuccess, message, userInfo -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
-            // So sánh
-            if (inputUser == savedUser && inputPass == savedPass) {
-                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-
-                // Chuyển sang Trang chủ (Dashboard) và "kẹp" thêm cái tên + chức vụ đem qua đó
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("NICKNAME", savedUser)
-                intent.putExtra("ROLE", savedRole)
-                startActivity(intent)
-                finish() // Đóng trang Đăng nhập
-            } else {
-                Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show()
+                if (isSuccess && userInfo != null) {
+                    // Đăng nhập đúng máy chủ -> Lưu vô Session
+                    sessionManager.createLoginSession(userInfo.id, userInfo.username, userInfo.phone, userInfo.role)
+                    goToMainActivity()
+                }
             }
         }
+    }
 
-        /* Bỏ comment đoạn này nếu bạn đã thêm nút chuyển qua Đăng ký
-        tvGoToRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
-        */
+    private fun goToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish() // Hủy luôn màn hình Login để bấm nút Back điện thoại không quay lại được
     }
 }

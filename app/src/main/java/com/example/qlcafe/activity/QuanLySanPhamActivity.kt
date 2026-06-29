@@ -40,8 +40,8 @@ class QuanLySanPhamActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupTopBar("Quản lý Sản phẩm")
         setContentView(R.layout.activity_quan_ly_san_pham)
+        setupTopBar("Quản lý Sản phẩm")
 
         dbHelper = DatabaseHelper(this)
 
