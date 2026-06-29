@@ -86,17 +86,11 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         }
         categories.add(TaskCategory("Sản phẩm", productTasks))
 
-        // 3. NHÓM CHẤM CÔNG
-        val timeAttendanceTasks = listOf(
-            TaskItem("bo_sung_cong", "Bổ sung/ sửa chấm công", android.R.drawable.ic_menu_edit),
-            TaskItem("thiet_bi_cham", "Thiết bị chấm công", android.R.drawable.ic_menu_camera)
-        )
-        categories.add(TaskCategory("Chấm công", timeAttendanceTasks))
-
         // 4. NHÓM LỊCH LÀM VIỆC
         val scheduleTasks = listOf(
             TaskItem("lich_chung", "Lịch làm việc chung", android.R.drawable.ic_menu_my_calendar),
-            TaskItem("dang_ky_lich", "Đăng ký lịch làm việc", android.R.drawable.ic_menu_day)
+            TaskItem("dang_ky_lich", "Đăng ký lịch làm việc", android.R.drawable.ic_menu_day),
+            TaskItem("bo_sung_cong", "Bổ sung/ sửa chấm công", android.R.drawable.ic_menu_edit)
         )
         categories.add(TaskCategory("Lịch làm việc", scheduleTasks))
 

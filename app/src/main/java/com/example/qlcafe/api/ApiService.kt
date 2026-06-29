@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import com.example.qlcafe.models.ChamCongRequest
 import com.example.qlcafe.models.ChamCongResponse
+import com.example.qlcafe.models.ThongBao
 import com.example.qlcafe.models.UpdateStatusRequest
 import com.example.qlcafe.models.UpdateStatusResponse
 import retrofit2.http.GET
@@ -22,13 +23,22 @@ interface ApiService {
 
     @POST("cham_cong.php")
     fun chamCongNhanVien(@Body request: ChamCongRequest): Call<ChamCongResponse>
-
-    @POST("add_attendance_request.php")
-    fun addAttendanceRequest(@Body request: AddAttendanceRequest): Call<AddAttendanceResponse>
-
-    @POST("update_attendance_status.php")
-    fun updateAttendanceStatus(@Body request: UpdateStatusRequest): Call<UpdateStatusResponse>
-    @GET("get_attendance_requests.php")
+    @GET("attendance_controller.php?action=get")
     fun getAttendanceRequests(@Query("user_id") userId: Int): Call<List<AttendanceRequest>>
 
+    @POST("attendance_controller.php?action=add")
+    fun addAttendanceRequest(@Body request: AddAttendanceRequest): Call<AddAttendanceResponse>
+
+    @POST("attendance_controller.php?action=update")
+    fun updateAttendanceStatus(@Body request: UpdateStatusRequest): Call<UpdateStatusResponse>
+
+    // API Quản lý Thông Báo
+    @GET("notification_controller.php?action=get")
+    fun getNotifications(): Call<List<ThongBao>>
+
+    @POST("notification_controller.php?action=add")
+    fun addNotification(@Body request: ThongBao): Call<AddAttendanceResponse>
+
+    @POST("notification_controller.php?action=delete")
+    fun deleteNotification(@Body request: Map<String, Int>): Call<AddAttendanceResponse>
 }

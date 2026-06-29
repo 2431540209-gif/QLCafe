@@ -70,4 +70,17 @@ class SessionManager(var context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
     }
+
+    fun addHiddenNotification(notifId: Int) {
+        val hiddenIds = getHiddenNotifications().toMutableSet()
+        hiddenIds.add(notifId)
+        val setString = hiddenIds.joinToString(",")
+        editor.putString("hidden_notifications", setString)
+        editor.apply()
+    }
+    fun getHiddenNotifications(): Set<Int> {
+        val setString = pref.getString("hidden_notifications", "") ?: ""
+        if (setString.isEmpty()) return emptySet()
+        return setString.split(",").map { it.toInt() }.toSet()
+    }
 }

@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.nav_home -> FragmentTrangChu()
                 R.id.nav_tasks -> FragmentTacVu()
-                R.id.nav_notifications -> FragmentThongBao()
+                R.id.nav_notifications -> FragmentNotifications()
                 R.id.nav_account -> FragmentProfile()
                 else -> FragmentTrangChu()
             }
