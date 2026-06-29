@@ -17,7 +17,7 @@ import com.example.qlcafe.viewmodel.OrderViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaoDonHangFragment : Fragment() {
+class FragmentTaoDonHang : Fragment() {
 
     private val viewModel: OrderViewModel by activityViewModels()
     
