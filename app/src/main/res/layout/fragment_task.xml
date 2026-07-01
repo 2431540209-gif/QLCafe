@@ -3,21 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4F0EC"> <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Tác vụ"
-    android:textColor="#212121"
-    android:textSize="26sp"
-    android:textStyle="bold"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:paddingTop="24dp"
-    android:paddingBottom="12dp" />
+    android:background="#F4F0EC">
+
+    <include layout="@layout/layout_top_bar" />
+
+    <include layout="@layout/layout_order_section" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMainTasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="80dp" /> </LinearLayout>
+        android:paddingBottom="80dp" />
+
+</LinearLayout>

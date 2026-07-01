@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,6 +49,24 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         val adapter = TaskCategoryAdapter(taskData, this)
         rvMainTasks.adapter = adapter
 
+        // Setup Top Bar
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle?.text = "Tác vụ"
+        val btnBack = view.findViewById<View>(R.id.btnBack)
+        btnBack?.visibility = View.GONE
+
+        // Setup Order Section
+        view.findViewById<View>(R.id.btnTaoDonMoiSection)?.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+            intent.putExtra("START_TAB", "CREATE")
+            startActivity(intent)
+        }
+        view.findViewById<View>(R.id.btnDsDonHangSection)?.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+            intent.putExtra("START_TAB", "LIST")
+            startActivity(intent)
+        }
+
         return view
     }
 
@@ -57,14 +76,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
     private fun getTaskListByRole(role: String): List<TaskCategory> {
         val categories = mutableListOf<TaskCategory>()
 
-        // 1. NHÓM ĐƠN HÀNG
-        val orderTasks = mutableListOf(
-            TaskItem("tao_don_hang", "Tạo đơn mới", android.R.drawable.ic_menu_add),
-            TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_sort_by_size)
-        )
-        categories.add(TaskCategory("Đơn hàng", orderTasks))
-
-        // 2. NHÓM SẢN PHẨM
+        // 1. NHÓM SẢN PHẨM
         val productTasks = mutableListOf(
             TaskItem("xem_menu", "Danh mục thực đơn", android.R.drawable.ic_menu_view)
         )
