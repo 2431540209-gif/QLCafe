@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.OrderListAdapter
-import com.example.qlcafe.models.OrderStatus
 import com.example.qlcafe.viewmodel.OrderViewModel
 
 class DanhSachDonHangFragment : Fragment() {
@@ -128,9 +127,9 @@ class DanhSachDonHangFragment : Fragment() {
     private fun refreshList() {
         val allOrders = viewModel.orders.value ?: emptyList()
         val filteredList = when (currentFilter) {
-            "PENDING" -> allOrders.filter { it.status == OrderStatus.PENDING }
-            "PROCESSED" -> allOrders.filter { it.status == OrderStatus.PROCESSED }
-            "CANCELLED" -> allOrders.filter { it.status == OrderStatus.CANCELLED }
+            "PENDING" -> allOrders.filter { it.status == "pending" }
+            "PROCESSED" -> allOrders.filter { it.status == "PROCESSED" }
+            "CANCELLED" -> allOrders.filter { it.status == "CANCELLED" }
             else -> allOrders
         }
 

@@ -3,7 +3,6 @@ package com.example.qlcafe.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.qlcafe.models.Order
-import com.example.qlcafe.models.OrderStatus
 
 /**
  * Singleton Repository để lưu trữ đơn hàng trong bộ nhớ.
@@ -19,14 +18,14 @@ object OrderRepository {
         _orders.value = orderList
     }
 
-    fun updateOrderStatus(orderId: String, newStatus: OrderStatus) {
+    fun updateOrderStatus(orderId: String, newStatus: String) {
         val order = orderList.find { it.id == orderId }
         order?.status = newStatus
         _orders.value = orderList
     }
 
     fun getTotalCount() = orderList.size
-    fun getPendingCount() = orderList.count { it.status == OrderStatus.PENDING }
-    fun getProcessedCount() = orderList.count { it.status == OrderStatus.PROCESSED }
-    fun getCancelledCount() = orderList.count { it.status == OrderStatus.CANCELLED }
+    fun getPendingCount() = orderList.count { it.status == "pending" }
+    fun getProcessedCount() = orderList.count { it.status == "PROCESSED" }
+    fun getCancelledCount() = orderList.count { it.status == "CANCELLED" }
 }

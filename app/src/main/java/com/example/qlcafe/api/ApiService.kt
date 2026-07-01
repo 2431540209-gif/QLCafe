@@ -13,6 +13,7 @@ import com.example.qlcafe.models.UpdateStatusRequest
 import com.example.qlcafe.models.UpdateStatusResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
+import com.example.qlcafe.models.*
 
 interface ApiService {
     @POST("register.php")
@@ -23,6 +24,7 @@ interface ApiService {
 
     @POST("cham_cong.php")
     fun chamCongNhanVien(@Body request: ChamCongRequest): Call<ChamCongResponse>
+
     @GET("attendance_controller.php?action=get")
     fun getAttendanceRequests(@Query("user_id") userId: Int): Call<List<AttendanceRequest>>
 
@@ -41,4 +43,14 @@ interface ApiService {
 
     @POST("notification_controller.php?action=delete")
     fun deleteNotification(@Body request: Map<String, Int>): Call<AddAttendanceResponse>
+
+    // API Quản lý Đơn Hàng (Sắp thêm vào server)
+    @GET("order_controller.php?action=get_products")
+    fun getProducts(): Call<List<Product>>
+
+    @POST("order_controller.php?action=create_order")
+    fun createOrder(@Body request: OrderRequest): Call<OrderResponse>
+
+    @GET("order_controller.php?action=get_orders")
+    fun getOrders(@Query("user_id") userId: Int): Call<List<Order>>
 }
