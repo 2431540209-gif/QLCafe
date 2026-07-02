@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.OrderListAdapter
-import com.example.qlcafe.viewmodel.OrderViewModel
+import com.example.qlcafe.models.OrderViewModel
 
 class DanhSachDonHangFragment : Fragment() {
 
