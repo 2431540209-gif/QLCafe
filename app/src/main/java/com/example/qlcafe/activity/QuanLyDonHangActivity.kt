@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.qlcafe.R
 import com.example.qlcafe.fragment.DanhSachDonHangFragment
 import com.example.qlcafe.fragment.FragmentTaoDonHang
-import com.example.qlcafe.viewmodel.OrderViewModel
+import com.example.qlcafe.models.OrderViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class QuanLyDonHangActivity : AppCompatActivity() {
