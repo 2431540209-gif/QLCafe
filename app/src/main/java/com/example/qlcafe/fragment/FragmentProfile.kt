@@ -2,17 +2,29 @@ package com.example.qlcafe.fragment
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.InputType
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.qlcafe.R
+import com.example.qlcafe.QLKhoActivity
+import com.example.qlcafe.activity.MainActivity
+import com.example.qlcafe.activity.StaffActivity
+import com.example.qlcafe.activity.QuanLyDonHangActivity
 import com.example.qlcafe.auth.SessionManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class FragmentProfile : Fragment(R.layout.activity_profile) {
     private lateinit var sessionManager: SessionManager
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
@@ -26,11 +38,33 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
         // Thiết lập sự kiện Click cho từng thẻ chức năng
-        cardPassword.setOnClickListener { openFeatureDialog("Đổi mật khẩu") }
-        cardStaff.setOnClickListener { openFeatureDialog("Nhân viên") }
-        cardInventory.setOnClickListener { openFeatureDialog("Kho nguyên liệu") }
-        cardReceipt.setOnClickListener { openFeatureDialog("Hóa đơn") }
-        cardNotification.setOnClickListener { openFeatureDialog("Thông báo") }
+        cardPassword.setOnClickListener { openChangePasswordDialog() }
+
+        cardStaff.setOnClickListener {
+            val intent = Intent(requireContext(), StaffActivity::class.java)
+            startActivity(intent)
+        }
+
+        cardInventory.setOnClickListener {
+            val intent = Intent(requireContext(), QLKhoActivity::class.java)
+            val sessionManager = SessionManager(requireContext())
+            intent.putExtra("ROLE", sessionManager.getUserRole())
+            startActivity(intent)
+        }
+
+        cardReceipt.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+            startActivity(intent)
+        }
+
+        cardNotification.setOnClickListener {
+            // Chuyển sang Tab Thông báo trên Bottom Navigation của MainActivity
+            (requireActivity() as? MainActivity)?.let { mainActivity ->
+                val bottomNav = mainActivity.findViewById<BottomNavigationView>(R.id.bottomNav)
+                bottomNav.selectedItemId = R.id.nav_notifications
+            }
+        }
+
         cardSetting.setOnClickListener { openFeatureDialog("Cài đặt") }
 
         // Đăng xuất dùng AlertDialog
@@ -45,6 +79,9 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
                 .setNegativeButton("Hủy", null)
                 .show()
         }
+
+        // Áp dụng tông màu sáng/tối cho toàn bộ các view động trong layout
+        applyTheme(view)
     }
 
     private fun openFeatureDialog(type: String) {
@@ -100,6 +137,22 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             "Cài đặt" -> {
                 sw.visibility = View.VISIBLE
                 sw.text = "Chế độ ban đêm (Dark Mode)"
+
+                // Đọc trạng thái Dark Mode hiện tại của ứng dụng
+                val currentMode = androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode()
+                sw.isChecked = (currentMode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
+
+                sw.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+                            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                        )
+                    } else {
+                        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+                            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+                        )
+                    }
+                }
             }
         }
 
@@ -108,5 +161,140 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             dialog.dismiss()
         }
         dialog.show()
+    }
+
+    private fun openChangePasswordDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+
+        // Custom Title cho đẹp mắt
+        val tvTitle = TextView(requireContext()).apply {
+            text = "Đổi Mật Khẩu"
+            textSize = 20f
+            setTextColor(Color.parseColor("#4A2C11")) // Nâu tông quán
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(0, dpToPx(24f), 0, dpToPx(10f))
+        }
+        builder.setCustomTitle(tvTitle)
+
+        // Khung Layout nhập liệu
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(24f), dpToPx(10f), dpToPx(24f), dpToPx(20f))
+        }
+
+        // Hàm tiện ích tạo ô nhập mật khẩu đẹp mắt, bo tròn góc
+        fun createPasswordInput(hintText: String): EditText {
+            return EditText(requireContext()).apply {
+                hint = hintText
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                textSize = 15f
+                setPadding(dpToPx(16f), dpToPx(14f), dpToPx(16f), dpToPx(14f))
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    setColor(Color.parseColor("#F5F5F5"))
+                    cornerRadius = dpToPx(12f).toFloat()
+                    setStroke(dpToPx(1f), Color.parseColor("#E0E0E0"))
+                }
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = dpToPx(14f)
+                }
+            }
+        }
+
+        val edtCurrentPass = createPasswordInput("Mật khẩu hiện tại")
+        val edtNewPass = createPasswordInput("Mật khẩu mới")
+        val edtConfirmPass = createPasswordInput("Xác nhận mật khẩu mới")
+
+        container.addView(edtCurrentPass)
+        container.addView(edtNewPass)
+        container.addView(edtConfirmPass)
+        builder.setView(container)
+
+        // Các nút hành động
+        builder.setPositiveButton("Cập nhật") { dialog, _ ->
+            val current = edtCurrentPass.text.toString().trim()
+            val new = edtNewPass.text.toString().trim()
+            val confirm = edtConfirmPass.text.toString().trim()
+
+            if (current.isEmpty() || new.isEmpty() || confirm.isEmpty()) {
+                Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ thông tin mật khẩu!", Toast.LENGTH_SHORT).show()
+                return@setPositiveButton
+            }
+
+            if (new != confirm) {
+                Toast.makeText(requireContext(), "Xác nhận mật khẩu mới không trùng khớp!", Toast.LENGTH_SHORT).show()
+                return@setPositiveButton
+            }
+
+            // Cập nhật lại mật khẩu giả lập trong FakeDatabase
+            val sharedPreferences = requireActivity().getSharedPreferences("FakeDatabase", Context.MODE_PRIVATE)
+            sharedPreferences.edit().apply {
+                putString("saved_password", new)
+                apply()
+            }
+
+            Toast.makeText(requireContext(), "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Hủy") { dialog, _ -> dialog.dismiss() }
+
+        val dialog = builder.create()
+        dialog.show()
+
+        // Định dạng màu sắc các nút Dialog cho đúng chủ đề của quán
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#D0770B")) // Màu cam thương hiệu
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.GRAY)
+    }
+
+    private fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        ).toInt()
+    }
+
+    private fun applyTheme(view: View) {
+        val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+        val bgColor = if (isNight) Color.parseColor("#121212") else Color.parseColor("#F2F5F9")
+        val cardBgColor = if (isNight) Color.parseColor("#1E1E1E") else Color.WHITE
+        val textColor = if (isNight) Color.parseColor("#E0E0E0") else Color.parseColor("#1A1A1A")
+        val subTextColor = if (isNight) Color.parseColor("#888888") else Color.parseColor("#666666")
+
+        // Nền của ScrollView
+        view.setBackgroundColor(bgColor)
+
+        // Đổi màu các TextView ID & Email
+        view.findViewById<TextView>(R.id.tvEmail)?.setTextColor(textColor)
+        view.findViewById<TextView>(R.id.tvID)?.setTextColor(subTextColor)
+
+        // Duyệt đệ quy đổi màu CardView và các TextView tiêu đề/nội dung
+        if (view is ViewGroup) {
+            fun traverse(v: View) {
+                if (v is CardView) {
+                    v.setCardBackgroundColor(cardBgColor)
+                }
+                if (v is TextView) {
+                    if (v.id != R.id.tvID && v.id != R.id.tvEmail) {
+                        if (v.text == "Thao tác nhanh" || v.text == "Hồ sơ cá nhân") {
+                            v.setTextColor(if (v.text == "Hồ sơ cá nhân") textColor else subTextColor)
+                        } else {
+                            v.setTextColor(textColor)
+                        }
+                    }
+                }
+                if (v is ViewGroup) {
+                    for (i in 0 until v.childCount) {
+                        traverse(v.getChildAt(i))
+                    }
+                }
+            }
+            traverse(view)
+        }
     }
 }
