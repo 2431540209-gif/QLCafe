@@ -45,3 +45,17 @@ data class UpdateStatusResponse(
     val success: Boolean,
     val message: String
 )
+data class EditAttendanceRequest(
+    val id: Int,
+    val user_id: Int,
+    val branch: String,
+    val request_date: String,
+    val shift_name: String,
+    val start_time: String,
+    val end_time: String,
+    val note: String
+)
+
+data class DeleteAttendanceRequest(
+    val id: Int
+)

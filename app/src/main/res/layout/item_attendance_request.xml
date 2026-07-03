@@ -64,15 +64,15 @@
             android:visibility="gone">
 
             <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTuChoi"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Từ chối"
-            android:textColor="#D32F2F"
-            app:strokeColor="#D32F2F" />
+                android:id="@+id/btnTuChoi"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Từ chối"
+                android:textColor="#D32F2F"
+                app:strokeColor="#D32F2F" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDuyet"
@@ -81,6 +81,37 @@
                 android:layout_weight="1"
                 android:text="Duyệt đơn"
                 app:backgroundTint="#388E3C" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutStaffActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutManagerActions"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSua"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Sửa"
+                android:textColor="#FF9800"
+                app:strokeColor="#FF9800" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnXoa"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xóa"
+                android:textColor="#E53935"
+                app:strokeColor="#E53935" />
         </LinearLayout>
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

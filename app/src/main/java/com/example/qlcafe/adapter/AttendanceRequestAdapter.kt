@@ -14,7 +14,9 @@ import com.google.android.material.button.MaterialButton
 class AttendanceRequestAdapter(
     private var dsDon: List<AttendanceRequest>,
     private val userRole: String, // Thêm biến nhận diện Quản lý hay Nhân viên
-    private val onActionClick: (Int, String) -> Unit // Truyền sự kiện bấm nút ra ngoài
+    private val onActionClick: (Int, String) -> Unit, // Truyền sự kiện bấm nút Duyệt/Từ chối
+    private val onEditClick: (AttendanceRequest) -> Unit, // Sự kiện sửa lịch
+    private val onDeleteClick: (Int) -> Unit // Sự kiện xóa lịch
 ) : RecyclerView.Adapter<AttendanceRequestAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -23,10 +25,15 @@ class AttendanceRequestAdapter(
         val tvShift: TextView = itemView.findViewById(R.id.tvItemShift)
         val tvTime: TextView = itemView.findViewById(R.id.tvItemTime)
 
-        // Khai báo 2 nút mới
+        // Khai báo 2 nút Duyệt/Từ chối cho quản lý
         val layoutActions: LinearLayout = itemView.findViewById(R.id.layoutManagerActions)
         val btnDuyet: MaterialButton = itemView.findViewById(R.id.btnDuyet)
         val btnTuChoi: MaterialButton = itemView.findViewById(R.id.btnTuChoi)
+
+        // Khai báo 2 nút Sửa/Xóa cho nhân viên
+        val layoutStaffActions: LinearLayout = itemView.findViewById(R.id.layoutStaffActions)
+        val btnSua: MaterialButton = itemView.findViewById(R.id.btnSua)
+        val btnXoa: MaterialButton = itemView.findViewById(R.id.btnXoa)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,9 +58,20 @@ class AttendanceRequestAdapter(
             holder.layoutActions.visibility = View.GONE
         }
 
-        // Bắt sự kiện bấm nút
+        // LOGIC HIỆN NÚT SỬA/XÓA: Nếu đơn đang "pending" thì cho phép Sửa/Xóa
+        if (don.status == "pending") {
+            holder.layoutStaffActions.visibility = View.VISIBLE
+        } else {
+            holder.layoutStaffActions.visibility = View.GONE
+        }
+
+        // Bắt sự kiện bấm nút Duyệt/Từ chối
         holder.btnDuyet.setOnClickListener { onActionClick(don.id, "approved") }
         holder.btnTuChoi.setOnClickListener { onActionClick(don.id, "rejected") }
+
+        // Bắt sự kiện bấm nút Sửa/Xóa
+        holder.btnSua.setOnClickListener { onEditClick(don) }
+        holder.btnXoa.setOnClickListener { onDeleteClick(don.id) }
 
         when (don.status) {
             "pending" -> {

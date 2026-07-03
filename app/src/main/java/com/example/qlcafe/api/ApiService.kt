@@ -34,6 +34,12 @@ interface ApiService {
     @POST("attendance_controller.php?action=update")
     fun updateAttendanceStatus(@Body request: UpdateStatusRequest): Call<UpdateStatusResponse>
 
+    @POST("attendance_controller.php?action=edit")
+    fun editAttendanceRequest(@Body request: EditAttendanceRequest): Call<AddAttendanceResponse>
+
+    @POST("attendance_controller.php?action=delete")
+    fun deleteAttendanceRequest(@Body request: DeleteAttendanceRequest): Call<AddAttendanceResponse>
+
     // API Quản lý Thông Báo
     @GET("notification_controller.php?action=get")
     fun getNotifications(): Call<List<ThongBao>>

@@ -73,8 +73,7 @@ class FragmentDangKyLich : Fragment() {
         val shifts = arrayOf(
             "Ca sáng (07:00 - 12:00)", 
             "Ca chiều (12:00 - 17:00)", 
-            "Ca tối (17:00 - 22:00)", 
-            "Ca phát sinh"
+            "Ca tối (17:00 - 22:00)"
         )
         val shiftAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, shifts)
         spnShift.setAdapter(shiftAdapter)
