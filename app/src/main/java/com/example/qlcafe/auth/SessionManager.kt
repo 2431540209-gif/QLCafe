@@ -3,7 +3,6 @@ package com.example.qlcafe.auth // Sửa lại package nếu của bạn khác
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import com.example.qlcafe.auth.LoginActivity // Chú ý import đúng đường dẫn LoginActivity của bạn
 
 class SessionManager(var context: Context) {
     private val pref: SharedPreferences = context.getSharedPreferences("QLCafeSession", Context.MODE_PRIVATE)
@@ -52,11 +51,13 @@ class SessionManager(var context: Context) {
     fun getUserName(): String {
         return pref.getString("USERNAME", "Nhân Viên") ?: "Nhân Viên"
     }
-
     fun getUserRole(): String {
         return pref.getString("USER_ROLE", "employee") ?: "employee"
     }
-
+    fun getUserId(): Int {
+        // Trả về -1 nếu bị lỗi không tìm thấy ID
+        return pref.getInt("USER_ID", -1)
+    }
     // Hàm Đăng xuất (Dùng cho cả khi hết hạn hoặc khi người dùng tự bấm nút)
     fun logoutUser() {
         // Xóa sạch bách sành sanh bộ nhớ
@@ -68,5 +69,18 @@ class SessionManager(var context: Context) {
         // Dòng cờ này giúp xóa hết các trang cũ đang mở, ngăn người dùng bấm nút "Back" quay lại
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
+    }
+
+    fun addHiddenNotification(notifId: Int) {
+        val hiddenIds = getHiddenNotifications().toMutableSet()
+        hiddenIds.add(notifId)
+        val setString = hiddenIds.joinToString(",")
+        editor.putString("hidden_notifications", setString)
+        editor.apply()
+    }
+    fun getHiddenNotifications(): Set<Int> {
+        val setString = pref.getString("hidden_notifications", "") ?: ""
+        if (setString.isEmpty()) return emptySet()
+        return setString.split(",").map { it.toInt() }.toSet()
     }
 }

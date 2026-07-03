@@ -6,18 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.OrderListAdapter
-import com.example.qlcafe.models.Order
 import com.example.qlcafe.models.OrderStatus
 import com.example.qlcafe.viewmodel.OrderViewModel
 
 class DanhSachDonHangFragment : Fragment() {
 
-    private lateinit var viewModel: OrderViewModel
+    private val viewModel: OrderViewModel by activityViewModels()
+
     private lateinit var tvDisplayCount: TextView
     private lateinit var tvDisplayLabel: TextView
     private lateinit var rvOrders: RecyclerView
@@ -35,7 +35,6 @@ class DanhSachDonHangFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_danh_sach_don_hang, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[OrderViewModel::class.java]
         val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
         tvTitle.text = getString(R.string.order_list)
 
@@ -125,39 +124,9 @@ class DanhSachDonHangFragment : Fragment() {
             }
         }
     }
-    private fun refreshList() {
-        // 2. THÊM: Tạo danh sách giả lập khớp hoàn toàn với class Order của bạn
-        val allOrders = listOf(
-            Order(
-                id = "DH01",
-                customerName = "Khách A",
-                table = "Bàn 1",
-                items = "Cà Phê Sữa Đá",
-                price = 25000.0,
-                time = "08:30",
-                status = OrderStatus.PENDING
-            ),
-            Order(
-                id = "DH02",
-                customerName = "Khách B",
-                table = "Bàn 2",
-                items = "Bạc Xỉu Đá",
-                price = 30000.0,
-                time = "09:00",
-                status = OrderStatus.PENDING
-            ),
-            Order(
-                id = "DH03",
-                customerName = "Khách C",
-                table = "Mang đi",
-                items = "CaCao Nóng",
-                price = 35000.0,
-                time = "09:15",
-                status = OrderStatus.PROCESSED
-            )
-        )
 
-        // 3. Đoạn code lọc theo Tab giữ nguyên
+    private fun refreshList() {
+        val allOrders = viewModel.orders.value ?: emptyList()
         val filteredList = when (currentFilter) {
             "PENDING" -> allOrders.filter { it.status == OrderStatus.PENDING }
             "PROCESSED" -> allOrders.filter { it.status == OrderStatus.PROCESSED }
@@ -165,7 +134,6 @@ class DanhSachDonHangFragment : Fragment() {
             else -> allOrders
         }
 
-        // 4. Đẩy dữ liệu vào Adapter
         rvOrders.adapter = OrderListAdapter(
             filteredList,
             onProcessClick = { order -> viewModel.processOrder(order.id) },

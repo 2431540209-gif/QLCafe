@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -9,14 +12,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.QLCafe">
+        android:theme="@style/Theme.QLCafe"
+        android:usesCleartextTraffic="true">
 
         <!-- MÀN HÌNH CHÍNH CỦA APP -->
         <activity
             android:name=".activity.MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.QLCafe">
+            android:theme="@style/Theme.QLCafe"/>
+
+        <activity android:name=".auth.LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,9 +41,6 @@
             android:exported="false"
             android:label="Quản Lý Đơn Hàng" />
 
-        <activity
-            android:name=".auth.LoginActivity"
-            android:exported="false" />
 
         <activity
             android:name=".auth.RegisterActivity"
@@ -48,6 +52,15 @@
             android:label="Quản Lý Kho"
             android:theme="@style/Theme.QLCafe" />
 
+        <activity
+            android:name=".activity.AttendanceListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QLCafe" />
+
+        <activity
+            android:name=".activity.AddAttendanceRequestActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QLCafe" />
     </application>
 
 </manifest>

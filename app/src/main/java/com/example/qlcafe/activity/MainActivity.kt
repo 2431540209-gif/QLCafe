@@ -16,11 +16,6 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        // Reset dữ liệu mặc định để luôn hiện ALIBABA - ADMIN
-        if (intent.getStringExtra("NICKNAME") == null) {
-            intent.putExtra("NICKNAME", "ALIBABA")
-            intent.putExtra("ROLE", "ADMIN")
-        }
 
         // Luôn mở Trang chủ khi khởi động
         if (savedInstanceState == null) {
@@ -32,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.nav_home -> FragmentTrangChu()
                 R.id.nav_tasks -> FragmentTacVu()
-                R.id.nav_notifications -> FragmentThongBao()
+                R.id.nav_notifications -> FragmentNotifications()
                 R.id.nav_account -> FragmentProfile()
                 else -> FragmentTrangChu()
             }

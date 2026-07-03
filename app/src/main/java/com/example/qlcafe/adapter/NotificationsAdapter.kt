@@ -11,11 +11,12 @@ import com.example.qlcafe.models.ThongBao
 import com.example.qlcafe.R
 
 // Chú ý: Tui thêm một cái onItemClick (Hàm callback) để bắt sự kiện chạm vào 1 dòng
-class ThongBaoAdapter(
+class NotificationsAdapter(
     private val dsThongBao: MutableList<ThongBao>,
+    private val userRole: String, // Thêm quyền
     private val onItemClick: (ThongBao) -> Unit,
     private val onItemLongClick: (Int, ThongBao)-> Unit
-) : RecyclerView.Adapter<ThongBaoAdapter.ThongBaoViewHolder>() {
+) : RecyclerView.Adapter<NotificationsAdapter.ThongBaoViewHolder>() {
 
     class ThongBaoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgIcon: ImageView = itemView.findViewById(R.id.imgIcon)
@@ -32,16 +33,16 @@ class ThongBaoAdapter(
     override fun onBindViewHolder(holder: ThongBaoViewHolder, position: Int) {
         val tb = dsThongBao[position]
         holder.txtTitle.text = tb.title
-        holder.txtContent.text = tb.content
-        holder.txtTime.text = tb.time
+        holder.txtContent.text = tb.short_content
+        holder.txtTime.text = tb.created_at
 
         // Trang điểm: Đổi icon và màu sắc tùy theo Loại thông báo
-        when (tb.loai) {
-            "KHO" -> {
+        when (tb.type) {
+            "INVENTORY" -> {
                 holder.imgIcon.setImageResource(android.R.drawable.ic_dialog_alert) // Icon cảnh báo
                 holder.imgIcon.setBackgroundColor(Color.parseColor("#FFCDD2")) // Nền đỏ nhạt
             }
-            "SU_KIEN" -> {
+            "EVENT" -> {
                 holder.imgIcon.setImageResource(android.R.drawable.ic_menu_today) // Icon lịch
                 holder.imgIcon.setBackgroundColor(Color.parseColor("#BBDEFB")) // Nền xanh nhạt
             }

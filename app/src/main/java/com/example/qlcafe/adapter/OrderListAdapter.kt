@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.models.Order
-import com.example.qlcafe.models.OrderStatus
 import java.util.*
 
 class OrderListAdapter(
@@ -38,25 +37,25 @@ class OrderListAdapter(
         holder.tvId.text = order.id
         holder.tvCustomer.text = "${order.customerName} — ${order.table}"
         holder.tvItems.text = order.items
-        holder.tvPrice.text = String.format(Locale.getDefault(), "%,.0fđ", order.price)
+        holder.tvPrice.text = String.format(Locale.getDefault(), "%,.0fđ", order.total_amount)
         holder.tvTime.text = order.time
 
         when (order.status) {
-            OrderStatus.PENDING -> {
+            "pending" -> {
                 holder.tvStatus.text = "Chờ xử lý"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_pending)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_pending))
                 holder.btnProcess.visibility = View.VISIBLE
                 holder.btnCancel.visibility = View.VISIBLE
             }
-            OrderStatus.PROCESSED -> {
+            "PROCESSED" -> {
                 holder.tvStatus.text = "Đã xử lý"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_completed)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_completed))
                 holder.btnProcess.visibility = View.GONE
                 holder.btnCancel.visibility = View.GONE
             }
-            OrderStatus.CANCELLED -> {
+            "CANCELLED" -> {
                 holder.tvStatus.text = "Đã hủy"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_cancelled)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_cancelled))

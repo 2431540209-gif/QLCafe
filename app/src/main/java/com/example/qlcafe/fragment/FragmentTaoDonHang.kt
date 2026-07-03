@@ -13,13 +13,16 @@ import com.example.qlcafe.R
 import com.example.qlcafe.adapter.ProductSelectionAdapter
 import com.example.qlcafe.models.Order
 import com.example.qlcafe.models.ProductOrder
-import com.example.qlcafe.viewmodel.OrderViewModel
+import com.example.qlcafe.models.OrderItemRequest
+import com.example.qlcafe.auth.SessionManager
+import com.example.qlcafe.models.OrderViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaoDonHangFragment : Fragment() {
+class FragmentTaoDonHang : Fragment() {
 
     private val viewModel: OrderViewModel by activityViewModels()
+    private lateinit var sessionManager: SessionManager
     
     private lateinit var etCustomerName: EditText
     private lateinit var spinnerTable: Spinner
@@ -27,20 +30,15 @@ class TaoDonHangFragment : Fragment() {
     private lateinit var tvTotalPrice: TextView
     private lateinit var btnSubmit: Button
     
-    private val products = listOf(
-        ProductOrder("Cà phê sữa", 25000.0),
-        ProductOrder("Bạc xỉu", 30000.0),
-        ProductOrder("Cappuccino", 45000.0),
-        ProductOrder("Trà đào", 30000.0),
-        ProductOrder("Sinh tố bơ", 35000.0),
-        ProductOrder("Bánh mì", 20000.0)
-    )
+    private var products = mutableListOf<ProductOrder>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_tao_don_hang, container, false)
+        
+        sessionManager = SessionManager(requireContext())
         
         val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
         tvTitle.text = getString(R.string.create_new_order)
@@ -53,6 +51,7 @@ class TaoDonHangFragment : Fragment() {
 
         setupSpinner()
         setupRecyclerView()
+        loadProductsFromServer() // Tải món từ server thay vì dùng list giả
         
         btnSubmit.setOnClickListener {
             createOrder()
@@ -63,6 +62,24 @@ class TaoDonHangFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun loadProductsFromServer() {
+        com.example.qlcafe.api.RetrofitClient.instance.getProducts().enqueue(object : retrofit2.Callback<List<com.example.qlcafe.models.Product>> {
+            override fun onResponse(call: retrofit2.Call<List<com.example.qlcafe.models.Product>>, response: retrofit2.Response<List<com.example.qlcafe.models.Product>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    products.clear()
+                    response.body()?.forEach { 
+                        products.add(ProductOrder(it.name, it.price))
+                    }
+                    rvProducts.adapter?.notifyDataSetChanged()
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<List<com.example.qlcafe.models.Product>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Không thể tải danh sách món!", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun setupSpinner() {
@@ -103,13 +120,34 @@ class TaoDonHangFragment : Fragment() {
         val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
         val orderId = "DH${String.format(Locale.getDefault(), "%03d", viewModel.getTotalCount() + 1)}"
 
-        val order = Order(orderId, name, table, itemsSummary, totalPrice, time)
-        viewModel.addOrder(order)
+        val order = Order(
+            id = orderId,
+            user_id = sessionManager.getUserId(),
+            customerName = name,
+            table = table,
+            items = itemsSummary,
+            total_amount = totalPrice,
+            payment_type = "Tiền mặt",
+            time = time
+        )
 
-        Toast.makeText(requireContext(), "Tạo đơn hàng thành công!", Toast.LENGTH_SHORT).show()
-        
-        // Chuyển sang tab Danh sách
-        val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_danh_sach
+        val apiItems = selectedItems.map { 
+            OrderItemRequest(
+                product_id = 1, // Trong thực tế cần id thật của product
+                quantity = it.quantity,
+                unit_price = it.price
+            )
+        }
+
+        btnSubmit.isEnabled = false
+        viewModel.addOrder(order, sessionManager.getUserId(), apiItems) { success, message ->
+            btnSubmit.isEnabled = true
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            if (success) {
+                // Chuyển sang tab Danh sách
+                val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
+                bottomNav.selectedItemId = R.id.nav_danh_sach
+            }
+        }
     }
 }

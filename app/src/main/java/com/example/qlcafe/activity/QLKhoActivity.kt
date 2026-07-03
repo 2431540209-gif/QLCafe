@@ -1,13 +1,11 @@
-package com.example.qlcafe.activity
+package com.example.qlcafe
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Space
 import androidx.appcompat.app.AppCompatActivity
-import com.example.qlcafe.R
-
+import android.widget.ImageView
 class QLKhoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

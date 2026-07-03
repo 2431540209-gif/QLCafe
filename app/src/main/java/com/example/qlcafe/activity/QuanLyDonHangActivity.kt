@@ -6,8 +6,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.qlcafe.R
 import com.example.qlcafe.fragment.DanhSachDonHangFragment
-import com.example.qlcafe.fragment.TaoDonHangFragment
-import com.example.qlcafe.viewmodel.OrderViewModel
+import com.example.qlcafe.fragment.FragmentTaoDonHang
+import com.example.qlcafe.models.OrderViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class QuanLyDonHangActivity : AppCompatActivity() {
@@ -28,7 +28,7 @@ class QuanLyDonHangActivity : AppCompatActivity() {
         
         if (savedInstanceState == null) {
             if (startTab == "CREATE") {
-                loadFragment(TaoDonHangFragment())
+                loadFragment(FragmentTaoDonHang())
                 bottomNav.selectedItemId = R.id.nav_tao_don
             } else {
                 loadFragment(DanhSachDonHangFragment())
@@ -39,7 +39,7 @@ class QuanLyDonHangActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.nav_danh_sach -> DanhSachDonHangFragment()
-                R.id.nav_tao_don -> TaoDonHangFragment()
+                R.id.nav_tao_don -> FragmentTaoDonHang()
                 else -> DanhSachDonHangFragment()
             }
             loadFragment(selectedFragment)
