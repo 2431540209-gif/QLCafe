@@ -20,7 +20,6 @@ class QuanLySanPhamActivity : AppCompatActivity() {
     private lateinit var btnChooseImg: Button    // Thêm mới
     private lateinit var btnThem: Button
     private lateinit var btnSua: Button
-    private lateinit var btnXoa: Button
     private lateinit var lvSanPham: ListView
     private lateinit var btnBack: ImageView
 
@@ -53,7 +52,6 @@ class QuanLySanPhamActivity : AppCompatActivity() {
         btnChooseImg = findViewById(R.id.btnChooseImg)
         btnThem = findViewById(R.id.btnThem)
         btnSua = findViewById(R.id.btnSua)
-        btnXoa = findViewById(R.id.btnXoa)
         lvSanPham = findViewById(R.id.lvSanPham)
         btnBack = findViewById(R.id.btnBack)
 
@@ -132,16 +130,26 @@ class QuanLySanPhamActivity : AppCompatActivity() {
             }
         }
 
-        // Xóa sản phẩm
-        btnXoa.setOnClickListener {
-            if (selectedId == -1) {
-                Toast.makeText(this, "Vui lòng chọn 1 sản phẩm cần xóa!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            dbHelper.deleteSanPham(selectedId)
-            Toast.makeText(this, "Đã xóa sản phẩm!", Toast.LENGTH_SHORT).show()
-            lamMoiForm()
-            hienThiDanhSach()
+        // Sự kiện đè (long click) để xóa sản phẩm
+        lvSanPham.setOnItemLongClickListener { _, _, _, id ->
+            val idCuaItemBiDe = id.toInt()
+
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm này không?")
+                .setPositiveButton("Xóa") { _, _ ->
+                    // Gọi hàm xóa từ database
+                    dbHelper.deleteSanPham(idCuaItemBiDe)
+                    Toast.makeText(this, "Đã xóa sản phẩm!", Toast.LENGTH_SHORT).show()
+
+                    // Xóa form và tải lại danh sách
+                    lamMoiForm()
+                    hienThiDanhSach()
+                }
+                .setNegativeButton("Hủy", null)
+                .show()
+
+            true // Trả về true để hệ thống biết sự kiện "đè" đã xử lý xong, không kích hoạt nhầm sự kiện click bình thường
         }
     }
 
