@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.QLCafe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Bật tự động chuyển màu tối cho các thành phần UI có màu hardcode (Android 10+) -->
+        <item name="android:forceDarkAllowed">true</item>
+    </style>
+    <style name="CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item> <!-- Tự động bo tròn 50% kích thước để thành hình tròn -->
+    </style>
+</resources>
