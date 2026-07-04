@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.qlcafe.activity.QuanLyDonHangActivity
 import com.example.qlcafe.activity.QuanLySanPhamActivity
 import com.example.qlcafe.QLKhoActivity
 import com.example.qlcafe.R
+import com.example.qlcafe.activity.AttendanceListActivity
 import com.example.qlcafe.adapter.TaskCategoryAdapter
 import com.example.qlcafe.adapter.TaskChildAdapter
 import com.example.qlcafe.auth.SessionManager
@@ -47,6 +49,24 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         val adapter = TaskCategoryAdapter(taskData, this)
         rvMainTasks.adapter = adapter
 
+        // Setup Top Bar
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle?.text = "Tác vụ"
+        val btnBack = view.findViewById<View>(R.id.btnBack)
+        btnBack?.visibility = View.GONE
+
+        // Setup Order Section
+        view.findViewById<View>(R.id.btnTaoDonMoiSection)?.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+            intent.putExtra("START_TAB", "CREATE")
+            startActivity(intent)
+        }
+        view.findViewById<View>(R.id.btnDsDonHangSection)?.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+            intent.putExtra("START_TAB", "LIST")
+            startActivity(intent)
+        }
+
         return view
     }
 
@@ -56,14 +76,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
     private fun getTaskListByRole(role: String): List<TaskCategory> {
         val categories = mutableListOf<TaskCategory>()
 
-        // 1. NHÓM ĐƠN HÀNG
-        val orderTasks = mutableListOf(
-            TaskItem("tao_don_hang", "Tạo đơn mới", android.R.drawable.ic_menu_add),
-            TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_sort_by_size)
-        )
-        categories.add(TaskCategory("Đơn hàng", orderTasks))
-
-        // 2. NHÓM SẢN PHẨM
+        // 1. NHÓM SẢN PHẨM
         val productTasks = mutableListOf(
             TaskItem("xem_menu", "Danh mục thực đơn", android.R.drawable.ic_menu_view)
         )
@@ -85,17 +98,11 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         }
         categories.add(TaskCategory("Sản phẩm", productTasks))
 
-        // 3. NHÓM CHẤM CÔNG
-        val timeAttendanceTasks = listOf(
-            TaskItem("bo_sung_cong", "Bổ sung/ sửa chấm công", android.R.drawable.ic_menu_edit),
-            TaskItem("thiet_bi_cham", "Thiết bị chấm công", android.R.drawable.ic_menu_camera)
-        )
-        categories.add(TaskCategory("Chấm công", timeAttendanceTasks))
-
         // 4. NHÓM LỊCH LÀM VIỆC
         val scheduleTasks = listOf(
             TaskItem("lich_chung", "Lịch làm việc chung", android.R.drawable.ic_menu_my_calendar),
-            TaskItem("dang_ky_lich", "Đăng ký lịch làm việc", android.R.drawable.ic_menu_day)
+            TaskItem("dang_ky_lich", "Đăng ký lịch làm việc", android.R.drawable.ic_menu_day),
+            TaskItem("bo_sung_cong", "Bổ sung/ sửa chấm công", android.R.drawable.ic_menu_edit)
         )
         categories.add(TaskCategory("Lịch làm việc", scheduleTasks))
 
@@ -140,6 +147,10 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             }
             "xem_menu" -> {
                 Toast.makeText(requireContext(), "Mở màn hình danh mục menu", Toast.LENGTH_SHORT).show()
+            }
+            "bo_sung_cong" ->{
+                val intent = Intent(requireContext(), AttendanceListActivity::class.java)
+                startActivity(intent)
             }
             else -> {
                 Toast.makeText(requireContext(), "Bạn vừa nhấn: ${item.title}", Toast.LENGTH_SHORT).show()
