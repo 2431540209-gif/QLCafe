@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.api.RetrofitClient
+import com.example.qlcafe.utils.setupTopBar
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.AttendanceRequest
 import retrofit2.Call
@@ -27,93 +29,26 @@ class FragmentLichChung : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val context = requireContext()
-
-        // Root Layout
-        val root = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            
-            // Đọc trạng thái tối
-            val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-            setBackgroundColor(if (isNight) Color.parseColor("#121212") else Color.parseColor("#F4F0EC"))
-        }
-
-        // Custom Header Bar
-        val header = RelativeLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(60f)).apply {
-                bottomMargin = dpToPx(8f)
-            }
-            setBackgroundColor(Color.parseColor("#D0770B")) // Màu cam thương hiệu
-            elevation = dpToPx(4f).toFloat()
-        }
-
-        // Nút quay lại (Back)
-        val btnBack = ImageView(context).apply {
-            setImageResource(android.R.drawable.ic_menu_revert)
-            setColorFilter(Color.WHITE)
-            setPadding(dpToPx(16f), dpToPx(16f), dpToPx(16f), dpToPx(16f))
-            layoutParams = RelativeLayout.LayoutParams(dpToPx(56f), dpToPx(56f)).apply {
-                addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-                addRule(RelativeLayout.CENTER_VERTICAL)
-            }
-            setOnClickListener {
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
-        header.addView(btnBack)
-
-        // Tiêu đề Trang
-        val tvTitle = TextView(context).apply {
-            text = "Lịch Làm Việc"
-            textSize = 18f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
-                addRule(RelativeLayout.CENTER_IN_PARENT)
-            }
-        }
-        header.addView(tvTitle)
-        root.addView(header)
-
-        // Vòng xoay load dữ liệu
-        progressBar = ProgressBar(context).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER
-                topMargin = dpToPx(40f)
-            }
-        }
-        root.addView(progressBar)
-
-        // Trạng thái danh sách rỗng
-        tvEmpty = TextView(context).apply {
-            text = "Không có lịch làm việc được phê duyệt nào."
-            textSize = 16f
-            setTextColor(Color.GRAY)
-            gravity = Gravity.CENTER
-            visibility = View.GONE
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                topMargin = dpToPx(100f)
-            }
-        }
-        root.addView(tvEmpty)
-
-        // Danh sách RecyclerView
-        rvLich = RecyclerView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
-            layoutManager = LinearLayoutManager(context)
-            setPadding(dpToPx(12f), dpToPx(8f), dpToPx(12f), dpToPx(8f))
-            clipToPadding = false
-        }
-        root.addView(rvLich)
-
-        return root
+    ): View? {
+        return inflater.inflate(R.layout.fragment_lich_chung, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
         sessionManager = SessionManager(requireContext())
+        
+        // Ánh xạ các View từ XML
+        rvLich = view.findViewById(R.id.rvLich)
+        tvEmpty = view.findViewById(R.id.tvEmpty)
+        progressBar = view.findViewById(R.id.progressBar)
+        
+        rvLich.layoutManager = LinearLayoutManager(requireContext())
+        
+        // Thiết lập tiêu đề thanh điều hướng Top Bar
+        val appCompatActivity = requireActivity() as? AppCompatActivity
+        appCompatActivity?.setupTopBar("Lịch Làm Việc")
+        
         loadLichLamViec()
     }
 
@@ -222,6 +157,7 @@ class FragmentLichChung : Fragment() {
         }
 
         override fun onBindViewHolder(holder: LichViewHolder, position: Int) {
+            com.example.qlcafe.utils.ThemeHelper.applyTheme(holder.itemView)
             val item = list[position]
             holder.tvDate.text = "Ngày: ${item.request_date}"
             // Định dạng chuỗi hiển thị

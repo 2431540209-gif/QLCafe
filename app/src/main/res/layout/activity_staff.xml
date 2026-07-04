@@ -2,11 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#F8F6F4">
 
+    <!-- Thanh tiêu đề phía trên -->
+    <include layout="@layout/layout_top_bar" />
+
+    <!-- Danh sách nhân viên -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

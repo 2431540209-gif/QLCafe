@@ -24,13 +24,12 @@ import com.example.qlcafe.auth.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class FragmentProfile : Fragment(R.layout.activity_profile) {
-    private lateinit var sessionManager: SessionManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sessionManager = SessionManager(requireContext())
+
         // Ánh xạ các thành phần giao diện
         val cardPassword = view.findViewById<CardView>(R.id.cardPassword)
-        val cardStaff = view.findViewById<CardView>(R.id.cardStaff)
         val cardInventory = view.findViewById<CardView>(R.id.cardInventory)
         val cardReceipt = view.findViewById<CardView>(R.id.cardReceipt)
         val cardNotification = view.findViewById<CardView>(R.id.cardNotification)
@@ -39,32 +38,27 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
 
         // Thiết lập sự kiện Click cho từng thẻ chức năng
         cardPassword.setOnClickListener { openChangePasswordDialog() }
-
-        cardStaff.setOnClickListener {
-            val intent = Intent(requireContext(), StaffActivity::class.java)
-            startActivity(intent)
-        }
-
-        cardInventory.setOnClickListener {
+        
+        cardInventory.setOnClickListener { 
             val intent = Intent(requireContext(), QLKhoActivity::class.java)
             val sessionManager = SessionManager(requireContext())
             intent.putExtra("ROLE", sessionManager.getUserRole())
             startActivity(intent)
         }
-
-        cardReceipt.setOnClickListener {
+        
+        cardReceipt.setOnClickListener { 
             val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
             startActivity(intent)
         }
-
-        cardNotification.setOnClickListener {
+        
+        cardNotification.setOnClickListener { 
             // Chuyển sang Tab Thông báo trên Bottom Navigation của MainActivity
             (requireActivity() as? MainActivity)?.let { mainActivity ->
                 val bottomNav = mainActivity.findViewById<BottomNavigationView>(R.id.bottomNav)
                 bottomNav.selectedItemId = R.id.nav_notifications
             }
         }
-
+        
         cardSetting.setOnClickListener { openFeatureDialog("Cài đặt") }
 
         // Đăng xuất dùng AlertDialog
@@ -73,15 +67,11 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đồng ý") { _, _ ->
-                    sessionManager.logoutUser()
-                    Toast.makeText(context, "Đã đăng xuất an toàn!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Hủy", null)
-                .show()
         }
-
-        // Áp dụng tông màu sáng/tối cho toàn bộ các view động trong layout
-        applyTheme(view)
+        
     }
 
     private fun openFeatureDialog(type: String) {
@@ -137,11 +127,11 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             "Cài đặt" -> {
                 sw.visibility = View.VISIBLE
                 sw.text = "Chế độ ban đêm (Dark Mode)"
-
+                
                 // Đọc trạng thái Dark Mode hiện tại của ứng dụng
                 val currentMode = androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode()
                 sw.isChecked = (currentMode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
-
+                
                 sw.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
@@ -165,7 +155,7 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
 
     private fun openChangePasswordDialog() {
         val builder = AlertDialog.Builder(requireContext())
-
+        
         // Custom Title cho đẹp mắt
         val tvTitle = TextView(requireContext()).apply {
             text = "Đổi Mật Khẩu"
@@ -241,7 +231,7 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         }
 
         builder.setNegativeButton("Hủy") { dialog, _ -> dialog.dismiss() }
-
+        
         val dialog = builder.create()
         dialog.show()
 
@@ -256,45 +246,5 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             dp,
             resources.displayMetrics
         ).toInt()
-    }
-
-    private fun applyTheme(view: View) {
-        val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-
-        val bgColor = if (isNight) Color.parseColor("#121212") else Color.parseColor("#F2F5F9")
-        val cardBgColor = if (isNight) Color.parseColor("#1E1E1E") else Color.WHITE
-        val textColor = if (isNight) Color.parseColor("#E0E0E0") else Color.parseColor("#1A1A1A")
-        val subTextColor = if (isNight) Color.parseColor("#888888") else Color.parseColor("#666666")
-
-        // Nền của ScrollView
-        view.setBackgroundColor(bgColor)
-
-        // Đổi màu các TextView ID & Email
-        view.findViewById<TextView>(R.id.tvEmail)?.setTextColor(textColor)
-        view.findViewById<TextView>(R.id.tvID)?.setTextColor(subTextColor)
-
-        // Duyệt đệ quy đổi màu CardView và các TextView tiêu đề/nội dung
-        if (view is ViewGroup) {
-            fun traverse(v: View) {
-                if (v is CardView) {
-                    v.setCardBackgroundColor(cardBgColor)
-                }
-                if (v is TextView) {
-                    if (v.id != R.id.tvID && v.id != R.id.tvEmail) {
-                        if (v.text == "Thao tác nhanh" || v.text == "Hồ sơ cá nhân") {
-                            v.setTextColor(if (v.text == "Hồ sơ cá nhân") textColor else subTextColor)
-                        } else {
-                            v.setTextColor(textColor)
-                        }
-                    }
-                }
-                if (v is ViewGroup) {
-                    for (i in 0 until v.childCount) {
-                        traverse(v.getChildAt(i))
-                    }
-                }
-            }
-            traverse(view)
-        }
     }
 }

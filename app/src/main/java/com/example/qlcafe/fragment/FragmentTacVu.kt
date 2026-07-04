@@ -56,6 +56,18 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         val btnBack = view.findViewById<View>(R.id.btnBack)
         btnBack?.visibility = View.GONE
 
+        // Setup Order Section
+//        view.findViewById<View>(R.id.btnTaoDonMoiSection)?.setOnClickListener {
+//            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+//            intent.putExtra("START_TAB", "CREATE")
+//            startActivity(intent)
+//        }
+//        view.findViewById<View>(R.id.btnDsDonHangSection)?.setOnClickListener {
+//            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+//            intent.putExtra("START_TAB", "LIST")
+//            startActivity(intent)
+//        }
+
         return view
     }
 
@@ -66,9 +78,9 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         val categories = mutableListOf<TaskCategory>()
 
         // 0. NHÓM ĐƠN HÀNG
-        val orderTasks = listOf(
-            TaskItem("tao_don_hang", "Tạo đơn mới", R.drawable.ic_add_circle),
-            TaskItem("ds_don_hang", "Danh sách đơn hàng", R.drawable.ic_list)
+        val orderTasks = mutableListOf(
+            TaskItem("tao_don_hang", "Tạo đơn mới", android.R.drawable.ic_menu_add),
+            TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_recent_history)
         )
         categories.add(TaskCategory("Đơn hàng", orderTasks))
 

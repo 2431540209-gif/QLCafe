@@ -42,6 +42,7 @@ class AttendanceRequestAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        com.example.qlcafe.utils.ThemeHelper.applyTheme(holder.itemView)
         val don = dsDon[position]
 
         val parts = don.request_date.split("-")
@@ -51,15 +52,15 @@ class AttendanceRequestAdapter(
         val endTime = don.end_time.take(5)
         holder.tvTime.text = "$startTime - $endTime"
 
-        // LOGIC HIỆN NÚT DUYỆT: Nếu là Manager VÀ đơn đang "pending" thì mới hiện 2 nút
+        // LOGIC HIỆN NÚT DUYỆT: Chỉ dành cho Quản lý (manager) và đơn ở trạng thái "pending"
         if (userRole == "manager" && don.status == "pending") {
             holder.layoutActions.visibility = View.VISIBLE
         } else {
             holder.layoutActions.visibility = View.GONE
         }
 
-        // LOGIC HIỆN NÚT SỬA/XÓA: Nếu đơn đang "pending" thì cho phép Sửa/Xóa
-        if (don.status == "pending") {
+        // LOGIC HIỆN NÚT SỬA/XÓA: Chỉ dành cho Nhân viên (không phải manager) và đơn ở trạng thái "pending"
+        if (userRole != "manager" && don.status == "pending") {
             holder.layoutStaffActions.visibility = View.VISIBLE
         } else {
             holder.layoutStaffActions.visibility = View.GONE
