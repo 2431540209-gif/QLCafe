@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.NotificationsAdapter
 import com.example.qlcafe.api.RetrofitClient
+import com.example.qlcafe.database.DatabaseHelper
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.AddAttendanceResponse
 import com.example.qlcafe.models.ThongBao
@@ -59,15 +60,26 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
         rvThongBao.layoutManager = LinearLayoutManager(requireContext())
         rvThongBao.adapter = adapter
 
+        // Load từ SQLite trước để tránh giật lag
+        val dbHelper = DatabaseHelper(requireContext())
+        val cached = dbHelper.getCachedNotifications()
+        val hiddenIds = sessionManager.getHiddenNotifications()
+        listDuLieu.clear()
+        listDuLieu.addAll(cached.filter { it.id !in hiddenIds })
+        adapter.notifyDataSetChanged()
+        view.findViewById<View>(R.id.layoutEmpty)?.visibility = if (listDuLieu.isEmpty()) View.VISIBLE else View.GONE
+
         // Kéo dữ liệu từ XAMPP về
         layDanhSachThongBao()
     }
 
     private fun layDanhSachThongBao() {
+        val dbHelper = DatabaseHelper(requireContext())
         RetrofitClient.instance.getNotifications().enqueue(object : Callback<List<ThongBao>> {
             override fun onResponse(call: Call<List<ThongBao>>, response: Response<List<ThongBao>>) {
                 if (response.isSuccessful && response.body() != null) {
                     val allNotifs = response.body()!!
+                    dbHelper.cacheNotifications(allNotifs)
                     val hiddenIds = sessionManager.getHiddenNotifications()
 
                     // Lọc bỏ những thông báo có ID nằm trong danh sách đã xóa
@@ -79,7 +91,9 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
                 }
             }
             override fun onFailure(call: Call<List<ThongBao>>, t: Throwable) {
-                Toast.makeText(requireContext(), "Lỗi mạng: ${t.message}", Toast.LENGTH_SHORT).show()
+                if (listDuLieu.isEmpty()) {
+                    Toast.makeText(requireContext(), "Lỗi mạng: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

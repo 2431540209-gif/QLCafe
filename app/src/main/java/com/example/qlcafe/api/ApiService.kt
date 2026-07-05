@@ -62,4 +62,7 @@ interface ApiService {
 
     @POST("order_controller.php?action=update_status")
     fun updateOrderStatus(@Body request: Map<String, String>): Call<OrderResponse>
+
+    @GET("order_controller.php?action=get_dashboard_stats")
+    fun getDashboardStats(): Call<DashboardStatsResponse>
 }

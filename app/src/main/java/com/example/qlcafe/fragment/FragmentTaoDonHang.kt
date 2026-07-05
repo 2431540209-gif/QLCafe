@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.ProductSelectionAdapter
+import com.example.qlcafe.database.DatabaseHelper
 import com.example.qlcafe.models.Order
 import com.example.qlcafe.models.OrderRequest
 import com.example.qlcafe.models.ProductOrder
@@ -66,11 +67,23 @@ class FragmentTaoDonHang : Fragment() {
     }
 
     private fun loadProductsFromServer() {
+        val dbHelper = DatabaseHelper(requireContext())
+        val cached = dbHelper.getCachedProducts()
+        if (cached.isNotEmpty()) {
+            products.clear()
+            cached.forEach { 
+                products.add(ProductOrder(it.id, it.name, it.price))
+            }
+            rvProducts.adapter?.notifyDataSetChanged()
+        }
+
         com.example.qlcafe.api.RetrofitClient.instance.getProducts().enqueue(object : retrofit2.Callback<List<com.example.qlcafe.models.Product>> {
             override fun onResponse(call: retrofit2.Call<List<com.example.qlcafe.models.Product>>, response: retrofit2.Response<List<com.example.qlcafe.models.Product>>) {
                 if (response.isSuccessful && response.body() != null) {
+                    val bodyList = response.body()!!
+                    dbHelper.cacheProducts(bodyList)
                     products.clear()
-                    response.body()?.forEach { 
+                    bodyList.forEach { 
                         products.add(ProductOrder(it.id, it.name, it.price))
                     }
                     rvProducts.adapter?.notifyDataSetChanged()
@@ -78,7 +91,9 @@ class FragmentTaoDonHang : Fragment() {
             }
 
             override fun onFailure(call: retrofit2.Call<List<com.example.qlcafe.models.Product>>, t: Throwable) {
-                Toast.makeText(requireContext(), "Không thể tải danh sách món!", Toast.LENGTH_SHORT).show()
+                if (products.isEmpty()) {
+                    Toast.makeText(requireContext(), "Không thể tải danh sách món!", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
