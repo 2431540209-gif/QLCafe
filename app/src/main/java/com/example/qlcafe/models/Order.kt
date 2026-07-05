@@ -54,3 +54,13 @@ object OrderStatus {
     const val PROCESSED = "done"
     const val CANCELLED = "cancel"
 }
+
+data class DashboardStats(
+    val total_revenue: Double,
+    val total_orders: Int
+)
+
+data class DashboardStatsResponse(
+    val success: Boolean,
+    val data: DashboardStats
+)

@@ -21,13 +21,14 @@ import com.example.qlcafe.activity.QLKhoActivity
 import com.example.qlcafe.activity.StaffActivity
 import com.example.qlcafe.activity.QuanLyDonHangActivity
 import com.example.qlcafe.auth.SessionManager
+import com.example.qlcafe.utils.ThemeHelper.applyTheme
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class FragmentProfile : Fragment(R.layout.activity_profile) {
-
+    private lateinit var sessionManager: SessionManager
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        sessionManager = SessionManager(requireContext())
         // Ánh xạ các thành phần giao diện
         val cardPassword = view.findViewById<CardView>(R.id.cardPassword)
         val cardInventory = view.findViewById<CardView>(R.id.cardInventory)
@@ -67,11 +68,15 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đồng ý") { _, _ ->
-                    Toast.makeText(context, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
+                    sessionManager.logoutUser()
+                    Toast.makeText(context, "Đã đăng xuất an toàn!", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Hủy", null)
+                .show()
         }
-        
+
+        // Áp dụng tông màu sáng/tối cho toàn bộ các view động trong layout
+        applyTheme(view)
     }
 
     private fun openFeatureDialog(type: String) {

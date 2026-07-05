@@ -23,9 +23,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.qlcafe.api.RetrofitClient
+import com.example.qlcafe.database.DatabaseHelper
 import com.example.qlcafe.models.ChamCongRequest
 import com.example.qlcafe.models.ChamCongResponse
 import com.example.qlcafe.models.ThongBao
+import com.example.qlcafe.models.DashboardStatsResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,14 +71,30 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
 
         // TỰ ĐỘNG LOAD THÔNG BÁO MỚI NHẤT CHO TRANG CHỦ
         loadThongBaoMoiNhatTrenTrangChu(view)
+
+        // --- LOAD THỐNG KÊ DOANH THU & ĐƠN HÀNG ---
+        val tvSoDoanhThu = view.findViewById<TextView>(R.id.tvsodoanhthu)
+        val tvSoDonHang = view.findViewById<TextView>(R.id.tvsodonhang)
+        loadDashboardStats(tvSoDoanhThu, tvSoDonHang)
     }
 
     private fun loadThongBaoMoiNhatTrenTrangChu(view: View) {
+        val dbHelper = DatabaseHelper(requireContext())
+        val cached = dbHelper.getCachedNotifications()
+        if (cached.isNotEmpty()) {
+            val tbMoiNhat = cached[0]
+            view.findViewById<TextView>(R.id.tvNotifTarget).text = "Hệ thống"
+            view.findViewById<TextView>(R.id.tvNotifTime).text = tbMoiNhat.created_at ?: "Vừa xong"
+            view.findViewById<TextView>(R.id.tvNotifTitle).text = tbMoiNhat.title
+            view.findViewById<TextView>(R.id.tvNotifContent).text = tbMoiNhat.short_content
+        }
+
         RetrofitClient.instance.getNotifications().enqueue(object : Callback<List<ThongBao>> {
             override fun onResponse(call: Call<List<ThongBao>>, response: Response<List<ThongBao>>) {
                 if (response.isSuccessful) {
                     val list = response.body()
                     if (!list.isNullOrEmpty()) {
+                        dbHelper.cacheNotifications(list)
                         val tbMoiNhat = list[0]
                         view.findViewById<TextView>(R.id.tvNotifTarget).text = "Hệ thống"
                         view.findViewById<TextView>(R.id.tvNotifTime).text = tbMoiNhat.created_at ?: "Vừa xong"
@@ -189,5 +207,42 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
             }
             .setNegativeButton("Hủy", null)
             .show()
+    }
+
+    private fun loadDashboardStats(tvSoDoanhThu: TextView, tvSoDonHang: TextView) {
+        val dbHelper = DatabaseHelper(requireContext())
+        val cachedStats = dbHelper.getCachedDashboardStats()
+        if (cachedStats != null) {
+            tvSoDoanhThu.text = formatRevenue(cachedStats.total_revenue)
+            tvSoDonHang.text = cachedStats.total_orders.toString()
+        }
+
+        RetrofitClient.instance.getDashboardStats().enqueue(object : Callback<DashboardStatsResponse> {
+            override fun onResponse(call: Call<DashboardStatsResponse>, response: Response<DashboardStatsResponse>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()!!
+                    if (body.success) {
+                        val stats = body.data
+                        dbHelper.cacheDashboardStats(stats)
+                        tvSoDoanhThu.text = formatRevenue(stats.total_revenue)
+                        tvSoDonHang.text = stats.total_orders.toString()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<DashboardStatsResponse>, t: Throwable) {
+                // Giữ nguyên mockup nếu gọi lỗi
+            }
+        })
+    }
+
+    private fun formatRevenue(revenue: Double): String {
+        return if (revenue >= 1_000_000) {
+            String.format(Locale.US, "%.1fM", revenue / 1_000_000.0)
+        } else if (revenue >= 1_000) {
+            String.format(Locale.US, "%.1fk", revenue / 1_000.0)
+        } else {
+            String.format(Locale.US, "%.0f", revenue)
+        }
     }
 }

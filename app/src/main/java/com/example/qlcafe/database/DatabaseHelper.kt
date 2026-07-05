@@ -6,13 +6,16 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.qlcafe.models.NguyenLieu
+import com.example.qlcafe.models.Product
+import com.example.qlcafe.models.DashboardStats
+import com.example.qlcafe.models.ThongBao
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "coffee_shop_db"
-        // TĂNG VERSION LÊN 4: Để tạo bảng Nguyên Liệu
-        private const val DATABASE_VERSION = 4
+        // TĂNG VERSION LÊN 5: Để tạo bảng Thông báo và Stats
+        private const val DATABASE_VERSION = 5
 
         // Cấu hình bảng Sản Phẩm
         const val TABLE_SAN_PHAM = "SanPham"
@@ -27,6 +30,20 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_NL_ID = "id"
         const val COL_NL_TEN = "tenNguyenLieu"
         const val COL_NL_SO_LUONG = "soLuong"
+
+        // Cấu hình bảng Thông báo
+        const val TABLE_THONG_BAO = "ThongBao"
+        const val COL_TB_ID = "id"
+        const val COL_TB_TYPE = "type"
+        const val COL_TB_TITLE = "title"
+        const val COL_TB_SHORT_CONTENT = "short_content"
+        const val COL_TB_DETAILS = "details"
+        const val COL_TB_CREATED_AT = "created_at"
+
+        // Cấu hình bảng Thống kê Dashboard
+        const val TABLE_DASHBOARD_STATS = "DashboardStats"
+        const val COL_STATS_REVENUE = "total_revenue"
+        const val COL_STATS_ORDERS = "total_orders"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -47,6 +64,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + "$COL_NL_TEN TEXT, "
                 + "$COL_NL_SO_LUONG INTEGER)")
         db.execSQL(createTableNguyenLieu)
+
+        // TẠO BẢNG THÔNG BÁO
+        val createTableThongBao = ("CREATE TABLE $TABLE_THONG_BAO ("
+                + "$COL_TB_ID INTEGER PRIMARY KEY, "
+                + "$COL_TB_TYPE TEXT, "
+                + "$COL_TB_TITLE TEXT, "
+                + "$COL_TB_SHORT_CONTENT TEXT, "
+                + "$COL_TB_DETAILS TEXT, "
+                + "$COL_TB_CREATED_AT TEXT)")
+        db.execSQL(createTableThongBao)
+
+        // TẠO BẢNG DASHBOARD STATS
+        val createTableStats = ("CREATE TABLE $TABLE_DASHBOARD_STATS ("
+                + "$COL_STATS_REVENUE REAL, "
+                + "$COL_STATS_ORDERS INTEGER)")
+        db.execSQL(createTableStats)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -65,6 +98,21 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     + "$COL_NL_TEN TEXT, "
                     + "$COL_NL_SO_LUONG INTEGER)")
             db.execSQL(createTableNguyenLieu)
+        }
+        if (oldVersion < 5) {
+            val createTableThongBao = ("CREATE TABLE $TABLE_THONG_BAO ("
+                    + "$COL_TB_ID INTEGER PRIMARY KEY, "
+                    + "$COL_TB_TYPE TEXT, "
+                    + "$COL_TB_TITLE TEXT, "
+                    + "$COL_TB_SHORT_CONTENT TEXT, "
+                    + "$COL_TB_DETAILS TEXT, "
+                    + "$COL_TB_CREATED_AT TEXT)")
+            db.execSQL(createTableThongBao)
+
+            val createTableStats = ("CREATE TABLE $TABLE_DASHBOARD_STATS ("
+                    + "$COL_STATS_REVENUE REAL, "
+                    + "$COL_STATS_ORDERS INTEGER)")
+            db.execSQL(createTableStats)
         }
     }
 
@@ -159,5 +207,116 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return result
+    }
+
+    // --- CÁC HÀM CACHE CHO THÔNG BÁO ---
+    fun cacheNotifications(list: List<ThongBao>) {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            db.delete(TABLE_THONG_BAO, null, null)
+            for (tb in list) {
+                val values = ContentValues().apply {
+                    put(COL_TB_ID, tb.id)
+                    put(COL_TB_TYPE, tb.type)
+                    put(COL_TB_TITLE, tb.title)
+                    put(COL_TB_SHORT_CONTENT, tb.short_content)
+                    put(COL_TB_DETAILS, tb.details)
+                    put(COL_TB_CREATED_AT, tb.created_at)
+                }
+                db.insert(TABLE_THONG_BAO, null, values)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    fun getCachedNotifications(): List<ThongBao> {
+        val list = ArrayList<ThongBao>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_THONG_BAO ORDER BY $COL_TB_ID DESC", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TB_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TB_TYPE))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow(COL_TB_TITLE))
+                val shortContent = cursor.getString(cursor.getColumnIndexOrThrow(COL_TB_SHORT_CONTENT))
+                val details = cursor.getString(cursor.getColumnIndexOrThrow(COL_TB_DETAILS))
+                val createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COL_TB_CREATED_AT))
+                list.add(ThongBao(id, type, title, shortContent, details, createdAt))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    // --- CÁC HÀM CACHE CHO SẢN PHẨM ---
+    fun cacheProducts(list: List<Product>) {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            db.delete(TABLE_SAN_PHAM, null, null)
+            for (p in list) {
+                val values = ContentValues().apply {
+                    put(COL_ID, p.id)
+                    put(COL_TEN_MON, p.name)
+                    put(COL_GIA, p.price)
+                    put(COL_MO_TA, "")
+                    put(COL_HINH_ANH, p.image_url ?: "")
+                }
+                db.insert(TABLE_SAN_PHAM, null, values)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    fun getCachedProducts(): List<Product> {
+        val list = ArrayList<Product>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_SAN_PHAM", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(COL_TEN_MON))
+                val price = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_GIA))
+                val imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COL_HINH_ANH))
+                list.add(Product(id, name, price, imageUrl, null))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    // --- CÁC HÀM CACHE CHO DASHBOARD STATS ---
+    fun cacheDashboardStats(stats: DashboardStats) {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            db.delete(TABLE_DASHBOARD_STATS, null, null)
+            val values = ContentValues().apply {
+                put(COL_STATS_REVENUE, stats.total_revenue)
+                put(COL_STATS_ORDERS, stats.total_orders)
+            }
+            db.insert(TABLE_DASHBOARD_STATS, null, values)
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    fun getCachedDashboardStats(): DashboardStats? {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_DASHBOARD_STATS LIMIT 1", null)
+        var stats: DashboardStats? = null
+        if (cursor.moveToFirst()) {
+            val revenue = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STATS_REVENUE))
+            val orders = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STATS_ORDERS))
+            stats = DashboardStats(revenue, orders)
+        }
+        cursor.close()
+        return stats
     }
 }
