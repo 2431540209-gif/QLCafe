@@ -56,16 +56,16 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         btnBack?.visibility = View.GONE
 
         // Setup Order Section
-        view.findViewById<View>(R.id.btnTaoDonMoiSection)?.setOnClickListener {
-            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
-            intent.putExtra("START_TAB", "CREATE")
-            startActivity(intent)
-        }
-        view.findViewById<View>(R.id.btnDsDonHangSection)?.setOnClickListener {
-            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
-            intent.putExtra("START_TAB", "LIST")
-            startActivity(intent)
-        }
+//        view.findViewById<View>(R.id.btnTaoDonMoiSection)?.setOnClickListener {
+//            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+//            intent.putExtra("START_TAB", "CREATE")
+//            startActivity(intent)
+//        }
+//        view.findViewById<View>(R.id.btnDsDonHangSection)?.setOnClickListener {
+//            val intent = Intent(requireContext(), QuanLyDonHangActivity::class.java)
+//            intent.putExtra("START_TAB", "LIST")
+//            startActivity(intent)
+//        }
 
         return view
     }
@@ -75,6 +75,13 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
      */
     private fun getTaskListByRole(role: String): List<TaskCategory> {
         val categories = mutableListOf<TaskCategory>()
+
+        // 0. NHÓM ĐƠN HÀNG
+        val orderTasks = mutableListOf(
+            TaskItem("tao_don_hang", "Tạo đơn mới", android.R.drawable.ic_menu_add),
+            TaskItem("ds_don_hang", "Danh sách đơn hàng", android.R.drawable.ic_menu_recent_history)
+        )
+        categories.add(TaskCategory("Đơn hàng", orderTasks))
 
         // 1. NHÓM SẢN PHẨM
         val productTasks = mutableListOf(

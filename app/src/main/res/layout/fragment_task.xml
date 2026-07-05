@@ -7,8 +7,6 @@
 
     <include layout="@layout/layout_top_bar" />
 
-    <include layout="@layout/layout_order_section" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMainTasks"
         android:layout_width="match_parent"

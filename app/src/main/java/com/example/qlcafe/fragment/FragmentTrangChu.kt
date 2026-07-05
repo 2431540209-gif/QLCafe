@@ -112,11 +112,19 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun kiemTraWiFiHopLe(): Boolean {
-        val wifiManager = requireContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val context = requireContext().applicationContext
+        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
         val wifiInfo = wifiManager.connectionInfo
+
+        // Lấy tên và xóa dấu ngoặc kép thừa
         val tenWifiHienTai = wifiInfo.ssid.replace("\"", "")
         val tenWifiCuaQuan = "AndroidWifi"
+
+
+        println("TEN WIFI THUC TE MAY DOC DUOC LA: [$tenWifiHienTai]")
+
         return tenWifiHienTai == tenWifiCuaQuan
     }
 
