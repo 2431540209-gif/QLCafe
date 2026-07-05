@@ -44,3 +44,9 @@ data class ProductOrder(
     val price: Double,
     var quantity: Int = 0
 )
+
+object OrderStatus {
+    const val PENDING = "pending"
+    const val PROCESSED = "processed"
+    const val CANCELLED = "cancelled"
+}

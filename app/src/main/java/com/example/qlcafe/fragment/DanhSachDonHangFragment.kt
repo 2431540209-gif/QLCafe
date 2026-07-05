@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.OrderListAdapter
 import com.example.qlcafe.models.OrderStatus
-import com.example.qlcafe.viewmodel.OrderViewModel
+import com.example.qlcafe.models.OrderViewModel
 
 class DanhSachDonHangFragment : Fragment() {
 
@@ -81,7 +81,7 @@ class DanhSachDonHangFragment : Fragment() {
 
     private fun updateTabUI(filter: String) {
         currentFilter = filter
-        
+
         btnTabAll.setBackgroundResource(if (filter == "ALL") R.drawable.bg_tab_selected else R.drawable.bg_tab_unselected)
         btnTabAll.setTextColor(if (filter == "ALL") requireContext().getColor(android.R.color.white) else requireContext().getColor(R.color.text_grey))
 
@@ -90,10 +90,10 @@ class DanhSachDonHangFragment : Fragment() {
 
         btnTabProcessed.setBackgroundResource(if (filter == "PROCESSED") R.drawable.bg_tab_selected else R.drawable.bg_tab_unselected)
         btnTabProcessed.setTextColor(if (filter == "PROCESSED") requireContext().getColor(android.R.color.white) else requireContext().getColor(R.color.text_grey))
-        
+
         btnTabCancelled.setBackgroundResource(if (filter == "CANCELLED") R.drawable.bg_tab_selected else R.drawable.bg_tab_unselected)
         btnTabCancelled.setTextColor(if (filter == "CANCELLED") requireContext().getColor(android.R.color.white) else requireContext().getColor(R.color.text_grey))
-        
+
         updateStatsDisplay()
     }
 

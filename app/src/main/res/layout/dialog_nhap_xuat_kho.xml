@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@android:color/white">
+
+    <!-- Tiêu đề Dialog (Sẽ đổi thành Nhập kho hoặc Xuất kho bằng code) -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nhập kho nguyên liệu"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Chọn nguyên liệu (Sử dụng Spinner để làm danh sách xổ xuống) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn nguyên liệu:"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerNguyenLieu"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Nhập số lượng -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số lượng:"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/edtSoLuong"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:inputType="number"
+        android:hint="Nhập số lượng (VD: 10)"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Nút Xác nhận và Hủy -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCancelDialog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hủy"
+            android:backgroundTint="#9E9E9E"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnConfirmDialog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Xác nhận"
+            android:backgroundTint="#D32F2F"/>
+    </LinearLayout>
+
+</LinearLayout>
