@@ -15,11 +15,14 @@ import com.example.qlcafe.activity.QuanLySanPhamActivity
 import com.example.qlcafe.R
 import com.example.qlcafe.activity.AttendanceListActivity
 import com.example.qlcafe.activity.QLKhoActivity
+import com.example.qlcafe.activity.StaffActivity
 import com.example.qlcafe.adapter.TaskCategoryAdapter
 import com.example.qlcafe.adapter.TaskChildAdapter
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.TaskCategory
 import com.example.qlcafe.models.TaskItem
+
+
 
 class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
 
@@ -157,6 +160,22 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             }
             "bo_sung_cong" ->{
                 val intent = Intent(requireContext(), AttendanceListActivity::class.java)
+                startActivity(intent)
+            }
+            "dang_ky_lich" -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, FragmentDangKyLich())
+                    .addToBackStack(null)
+                    .commit()
+            }
+            "lich_chung" -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, FragmentLichChung())
+                    .addToBackStack(null)
+                    .commit()
+            }
+            "ql_nhan_vien" -> {
+                val intent = Intent(requireContext(), StaffActivity::class.java)
                 startActivity(intent)
             }
             else -> {
