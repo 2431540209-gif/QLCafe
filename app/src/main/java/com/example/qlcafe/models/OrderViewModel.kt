@@ -13,14 +13,23 @@ class OrderViewModel : ViewModel() {
     // Sử dụng Repository để lấy dữ liệu thay vì lưu cục bộ
     val orders: LiveData<MutableList<Order>> = OrderRepository.orders
 
-    fun addOrder(order: Order, userId: Int, items: List<OrderItemRequest>, onResult: (Boolean, String) -> Unit) {
-        val request = OrderRequest(
-            user_id = userId,
-            total_amount = order.total_amount,
-            payment_type = order.payment_type,
-            items = items
-        )
+    fun fetchOrders(userId: Int) {
+        RetrofitClient.instance.getOrders(userId).enqueue(object : Callback<List<Order>> {
+            override fun onResponse(call: Call<List<Order>>, response: Response<List<Order>>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        OrderRepository.setOrders(it)
+                    }
+                }
+            }
 
+            override fun onFailure(call: Call<List<Order>>, t: Throwable) {
+                // Có thể thêm LiveData xử lý lỗi nếu cần
+            }
+        })
+    }
+
+    fun addOrder(request: OrderRequest, order: Order, onResult: (Boolean, String) -> Unit) {
         RetrofitClient.instance.createOrder(request).enqueue(object : Callback<OrderResponse> {
             override fun onResponse(call: Call<OrderResponse>, response: Response<OrderResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
@@ -38,11 +47,26 @@ class OrderViewModel : ViewModel() {
     }
 
     fun processOrder(orderId: String) {
-        OrderRepository.updateOrderStatus(orderId, "PROCESSED")
+        updateStatusOnServer(orderId, OrderStatus.PROCESSED)
     }
 
     fun cancelOrder(orderId: String) {
-        OrderRepository.updateOrderStatus(orderId, "CANCELLED")
+        updateStatusOnServer(orderId, OrderStatus.CANCELLED)
+    }
+
+    private fun updateStatusOnServer(orderId: String, status: String) {
+        val request = mapOf("order_id" to orderId, "status" to status)
+        RetrofitClient.instance.updateOrderStatus(request).enqueue(object : Callback<OrderResponse> {
+            override fun onResponse(call: Call<OrderResponse>, response: Response<OrderResponse>) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    OrderRepository.updateOrderStatus(orderId, status)
+                }
+            }
+
+            override fun onFailure(call: Call<OrderResponse>, t: Throwable) {
+                // Xử lý lỗi nếu cần
+            }
+        })
     }
 
     fun getTotalCount(): Int = OrderRepository.getTotalCount()

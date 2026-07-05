@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.OrderListAdapter
+import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.models.OrderStatus
 import com.example.qlcafe.models.OrderViewModel
 
@@ -27,6 +28,7 @@ class DanhSachDonHangFragment : Fragment() {
     private lateinit var btnTabProcessed: TextView
     private lateinit var btnTabCancelled: TextView
 
+    private lateinit var sessionManager: SessionManager
     private var currentFilter = "ALL"
 
     override fun onCreateView(
@@ -48,6 +50,10 @@ class DanhSachDonHangFragment : Fragment() {
         btnTabCancelled = view.findViewById(R.id.btnTabCancelled)
 
         rvOrders.layoutManager = LinearLayoutManager(requireContext())
+
+        sessionManager = SessionManager(requireContext())
+        val userId = sessionManager.getUserId()
+        viewModel.fetchOrders(userId)
 
         setupTabs()
         observeViewModel()

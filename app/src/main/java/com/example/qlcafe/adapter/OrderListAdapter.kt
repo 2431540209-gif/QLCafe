@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.models.Order
+import com.example.qlcafe.models.OrderStatus
 import java.util.*
 
 class OrderListAdapter(
@@ -35,27 +36,31 @@ class OrderListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val order = orders[position]
         holder.tvId.text = order.id
-        holder.tvCustomer.text = "${order.customerName} — ${order.table}"
-        holder.tvItems.text = order.items
+        
+        val customer = order.customer_name ?: "Khách lẻ"
+        val tableInfo = order.table_name ?: "Mang về"
+        holder.tvCustomer.text = "$customer — $tableInfo"
+        
+        holder.tvItems.text = order.items ?: "Chi tiết đơn hàng"
         holder.tvPrice.text = String.format(Locale.getDefault(), "%,.0fđ", order.total_amount)
-        holder.tvTime.text = order.time
+        holder.tvTime.text = order.created_at ?: ""
 
         when (order.status) {
-            "pending" -> {
+            OrderStatus.PENDING -> {
                 holder.tvStatus.text = "Chờ xử lý"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_pending)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_pending))
                 holder.btnProcess.visibility = View.VISIBLE
                 holder.btnCancel.visibility = View.VISIBLE
             }
-            "PROCESSED" -> {
+            OrderStatus.PROCESSED -> {
                 holder.tvStatus.text = "Đã xử lý"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_completed)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_completed))
                 holder.btnProcess.visibility = View.GONE
                 holder.btnCancel.visibility = View.GONE
             }
-            "CANCELLED" -> {
+            OrderStatus.CANCELLED -> {
                 holder.tvStatus.text = "Đã hủy"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_cancelled)
                 holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.status_cancelled))

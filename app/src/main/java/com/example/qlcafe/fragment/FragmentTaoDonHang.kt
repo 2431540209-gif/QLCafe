@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.ProductSelectionAdapter
 import com.example.qlcafe.models.Order
+import com.example.qlcafe.models.OrderRequest
 import com.example.qlcafe.models.ProductOrder
 import com.example.qlcafe.models.OrderItemRequest
 import com.example.qlcafe.auth.SessionManager
@@ -117,18 +118,19 @@ class FragmentTaoDonHang : Fragment() {
         val table = spinnerTable.selectedItem.toString()
         val itemsSummary = selectedItems.joinToString(", ") { "${it.name} x${it.quantity}" }
         val totalPrice = selectedItems.sumOf { it.price * it.quantity }
-        val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
         val orderId = "DH${String.format(Locale.getDefault(), "%03d", viewModel.getTotalCount() + 1)}"
 
         val order = Order(
             id = orderId,
             user_id = sessionManager.getUserId(),
-            customerName = name,
-            table = table,
+            customer_name = name,
+            table_name = table,
             items = itemsSummary,
             total_amount = totalPrice,
             payment_type = "Tiền mặt",
-            time = time
+            created_at = currentTime,
+            updated_at = currentTime
         )
 
         val apiItems = selectedItems.map { 
@@ -139,8 +141,17 @@ class FragmentTaoDonHang : Fragment() {
             )
         }
 
+        val request = OrderRequest(
+            user_id = sessionManager.getUserId(),
+            customer_name = name,
+            table_name = table,
+            total_amount = totalPrice,
+            payment_type = "Tiền mặt",
+            items = apiItems
+        )
+
         btnSubmit.isEnabled = false
-        viewModel.addOrder(order, sessionManager.getUserId(), apiItems) { success, message ->
+        viewModel.addOrder(request, order) { success, message ->
             btnSubmit.isEnabled = true
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             if (success) {

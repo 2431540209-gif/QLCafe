@@ -3,17 +3,20 @@ package com.example.qlcafe.models
 data class Order(
     val id: String,
     val user_id: Int?,
-    val customerName: String, // Trong DB thực tế có thể map từ user_id hoặc thêm cột
-    val table: String,
-    val items: String, // Summary for local display
+    val customer_name: String?, // Tên khách
+    val table_name: String?,   // Số bàn
+    val items: String?,        // Tổng hợp món
     val total_amount: Double,
     val payment_type: String,
-    val time: String,
+    val created_at: String?,
+    val updated_at: String?,
     var status: String = "pending"
 )
 
 data class OrderRequest(
     val user_id: Int,
+    val customer_name: String,
+    val table_name: String,
     val total_amount: Double,
     val payment_type: String,
     val items: List<OrderItemRequest>
@@ -47,6 +50,6 @@ data class ProductOrder(
 
 object OrderStatus {
     const val PENDING = "pending"
-    const val PROCESSED = "processed"
-    const val CANCELLED = "cancelled"
+    const val PROCESSED = "done"
+    const val CANCELLED = "cancel"
 }

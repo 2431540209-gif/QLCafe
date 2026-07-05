@@ -59,4 +59,7 @@ interface ApiService {
 
     @GET("order_controller.php?action=get_orders")
     fun getOrders(@Query("user_id") userId: Int): Call<List<Order>>
+
+    @POST("order_controller.php?action=update_status")
+    fun updateOrderStatus(@Body request: Map<String, String>): Call<OrderResponse>
 }
