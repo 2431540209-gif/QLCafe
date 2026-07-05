@@ -71,7 +71,7 @@ class FragmentTaoDonHang : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     products.clear()
                     response.body()?.forEach { 
-                        products.add(ProductOrder(it.name, it.price))
+                        products.add(ProductOrder(it.id, it.name, it.price))
                     }
                     rvProducts.adapter?.notifyDataSetChanged()
                 }
@@ -135,7 +135,7 @@ class FragmentTaoDonHang : Fragment() {
 
         val apiItems = selectedItems.map { 
             OrderItemRequest(
-                product_id = 1, // Trong thực tế cần id thật của product
+                product_id = it.id,
                 quantity = it.quantity,
                 unit_price = it.price
             )
