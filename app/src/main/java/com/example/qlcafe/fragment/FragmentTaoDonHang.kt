@@ -68,7 +68,7 @@ class FragmentTaoDonHang : Fragment() {
 
     private fun loadProductsFromServer() {
         val dbHelper = DatabaseHelper(requireContext())
-        val cached = dbHelper.getCachedProducts()
+        val cached = dbHelper.productDao.getCachedProducts()
         if (cached.isNotEmpty()) {
             products.clear()
             cached.forEach { 
@@ -81,7 +81,7 @@ class FragmentTaoDonHang : Fragment() {
             override fun onResponse(call: retrofit2.Call<List<com.example.qlcafe.models.Product>>, response: retrofit2.Response<List<com.example.qlcafe.models.Product>>) {
                 if (response.isSuccessful && response.body() != null) {
                     val bodyList = response.body()!!
-                    dbHelper.cacheProducts(bodyList)
+                    dbHelper.productDao.cacheProducts(bodyList)
                     products.clear()
                     bodyList.forEach { 
                         products.add(ProductOrder(it.id, it.name, it.price))

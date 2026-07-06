@@ -80,7 +80,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
 
     private fun loadThongBaoMoiNhatTrenTrangChu(view: View) {
         val dbHelper = DatabaseHelper(requireContext())
-        val cached = dbHelper.getCachedNotifications()
+        val cached = dbHelper.notificationDao.getCachedNotifications()
         if (cached.isNotEmpty()) {
             val tbMoiNhat = cached[0]
             view.findViewById<TextView>(R.id.tvNotifTarget).text = "Hệ thống"
@@ -94,7 +94,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
                 if (response.isSuccessful) {
                     val list = response.body()
                     if (!list.isNullOrEmpty()) {
-                        dbHelper.cacheNotifications(list)
+                        dbHelper.notificationDao.cacheNotifications(list)
                         val tbMoiNhat = list[0]
                         view.findViewById<TextView>(R.id.tvNotifTarget).text = "Hệ thống"
                         view.findViewById<TextView>(R.id.tvNotifTime).text = tbMoiNhat.created_at ?: "Vừa xong"
@@ -211,7 +211,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
 
     private fun loadDashboardStats(tvSoDoanhThu: TextView, tvSoDonHang: TextView) {
         val dbHelper = DatabaseHelper(requireContext())
-        val cachedStats = dbHelper.getCachedDashboardStats()
+        val cachedStats = dbHelper.dashboardStatsDao.getCachedDashboardStats()
         if (cachedStats != null) {
             tvSoDoanhThu.text = formatRevenue(cachedStats.total_revenue)
             tvSoDonHang.text = cachedStats.total_orders.toString()
@@ -223,7 +223,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
                     val body = response.body()!!
                     if (body.success) {
                         val stats = body.data
-                        dbHelper.cacheDashboardStats(stats)
+                        dbHelper.dashboardStatsDao.cacheDashboardStats(stats)
                         tvSoDoanhThu.text = formatRevenue(stats.total_revenue)
                         tvSoDonHang.text = stats.total_orders.toString()
                     }

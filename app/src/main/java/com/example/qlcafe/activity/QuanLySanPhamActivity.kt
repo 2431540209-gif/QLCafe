@@ -1,70 +1,56 @@
 package com.example.qlcafe.activity
 
-import android.database.Cursor
-import android.net.Uri
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qlcafe.R
-import com.example.qlcafe.database.DatabaseHelper
+import com.example.qlcafe.api.*
+import com.example.qlcafe.models.*
 import com.example.qlcafe.utils.setupTopBar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class QuanLySanPhamActivity : AppCompatActivity() {
 
-    private lateinit var dbHelper: DatabaseHelper
     private lateinit var edtTenMon: EditText
     private lateinit var edtGiaMon: EditText
-    private lateinit var edtMoTa: EditText        // Thêm mới
-    private lateinit var imgProduct: ImageView    // Thêm mới
-    private lateinit var btnChooseImg: Button    // Thêm mới
+    private lateinit var edtMoTa: EditText
     private lateinit var btnThem: Button
     private lateinit var btnSua: Button
     private lateinit var lvSanPham: ListView
-    private lateinit var btnBack: ImageView
 
     private var selectedId: Int = -1
-    private var selectedImageUri: String = "" // Biến lưu đường dẫn ảnh dạng chuỗi
-    private lateinit var adapter: SimpleCursorAdapter
-
-    // Bộ công cụ mở thư viện ảnh hệ thống của Android
-    private val imagePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        if (uri != null) {
-            selectedImageUri = uri.toString()
-            imgProduct.setImageURI(uri) // Hiển thị ảnh lên giao diện
-        }
-    }
+    private var listProduct = mutableListOf<Product>()
+    private lateinit var adapter: SanPhamAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quan_ly_san_pham)
         setupTopBar("Quản lý Sản phẩm")
 
-        dbHelper = DatabaseHelper(this)
-
         // Ánh xạ View
         edtTenMon = findViewById(R.id.edtTenMon)
         edtGiaMon = findViewById(R.id.edtGiaMon)
         edtMoTa = findViewById(R.id.edtMoTa)
-        imgProduct = findViewById(R.id.imgProduct)
-        btnChooseImg = findViewById(R.id.btnChooseImg)
         btnThem = findViewById(R.id.btnThem)
         btnSua = findViewById(R.id.btnSua)
         lvSanPham = findViewById(R.id.lvSanPham)
-        btnBack = findViewById(R.id.btnBack)
 
+        findViewById<ImageView>(R.id.btnBack)?.setOnClickListener {
+            finish()
+        }
+
+        // Khởi tạo Adapter cho ListView
+        adapter = SanPhamAdapter(this, listProduct)
+        lvSanPham.adapter = adapter
+
+        // Tải danh sách sản phẩm từ API
         hienThiDanhSach()
-
-        btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-
-        // Bắt sự kiện chọn ảnh
-        btnChooseImg.setOnClickListener {
-            imagePickerLauncher.launch("image/*") // Chỉ mở các file định dạng ảnh
-        }
 
         // Thêm sản phẩm
         btnThem.setOnClickListener {
@@ -75,38 +61,42 @@ class QuanLySanPhamActivity : AppCompatActivity() {
             if (ten.isEmpty() || giaStr.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ tên và giá!", Toast.LENGTH_SHORT).show()
             } else {
-                val kq = dbHelper.insertSanPham(ten, giaStr.toDouble(), moTa, selectedImageUri)
-                if (kq > -1) {
-                    Toast.makeText(this, "Thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show()
-                    lamMoiForm()
-                    hienThiDanhSach()
+                val gia = giaStr.toDoubleOrNull()
+                if (gia == null) {
+                    Toast.makeText(this, "Giá tiền không hợp lệ!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
+                val request = AddProductRequest(ten, gia, moTa)
+                btnThem.isEnabled = false
+                RetrofitClient.instance.addProduct(request).enqueue(object : Callback<ProductResponse> {
+                    override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
+                        btnThem.isEnabled = true
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(this@QuanLySanPhamActivity, "Thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show()
+                            lamMoiForm()
+                            hienThiDanhSach()
+                        } else {
+                            val msg = response.body()?.message ?: "Lỗi thêm sản phẩm"
+                            Toast.makeText(this@QuanLySanPhamActivity, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+                        btnThem.isEnabled = true
+                        Toast.makeText(this@QuanLySanPhamActivity, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
             }
         }
 
-        // Chọn item trên ListView để sửa/xóa
-        lvSanPham.onItemClickListener = AdapterView.OnItemClickListener { _, view, _, id ->
-            selectedId = id.toInt()
+        // Chọn item trên ListView để sửa
+        lvSanPham.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            val product = listProduct[position]
+            selectedId = product.id
 
-            val cursor = dbHelper.getAllSanPham()
-            if (cursor.moveToPosition(lvSanPham.getPositionForView(view))) {
-                // Đọc chính xác dữ liệu từ SQLite ra dựa vào vị trí click
-                val ten = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_TEN_MON))
-                val gia = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_GIA))
-                val moTa = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_MO_TA))
-                val hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_HINH_ANH))
-
-                edtTenMon.setText(ten)
-                edtGiaMon.setText(String.format("%.0f", gia))
-                edtMoTa.setText(moTa)
-
-                selectedImageUri = hinhAnh
-                if (hinhAnh.isNotEmpty()) {
-                    imgProduct.setImageURI(Uri.parse(hinhAnh))
-                } else {
-                    imgProduct.setImageResource(android.R.drawable.ic_menu_gallery)
-                }
-            }
+            edtTenMon.setText(product.name)
+            edtGiaMon.setText(String.format("%.0f", product.price))
+            edtMoTa.setText(product.description ?: "")
         }
 
         // Sửa sản phẩm
@@ -123,69 +113,111 @@ class QuanLySanPhamActivity : AppCompatActivity() {
             if (ten.isEmpty() || giaStr.isEmpty()) {
                 Toast.makeText(this, "Thông tin không được bỏ trống!", Toast.LENGTH_SHORT).show()
             } else {
-                dbHelper.updateSanPham(selectedId, ten, giaStr.toDouble(), moTa, selectedImageUri)
-                Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
-                lamMoiForm()
-                hienThiDanhSach()
+                val gia = giaStr.toDoubleOrNull()
+                if (gia == null) {
+                    Toast.makeText(this, "Giá tiền không hợp lệ!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val request = UpdateProductRequest(selectedId, ten, gia, moTa)
+                btnSua.isEnabled = false
+                RetrofitClient.instance.updateProduct(request).enqueue(object : Callback<ProductResponse> {
+                    override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
+                        btnSua.isEnabled = true
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(this@QuanLySanPhamActivity, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
+                            lamMoiForm()
+                            hienThiDanhSach()
+                        } else {
+                            val msg = response.body()?.message ?: "Lỗi cập nhật sản phẩm"
+                            Toast.makeText(this@QuanLySanPhamActivity, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+                        btnSua.isEnabled = true
+                        Toast.makeText(this@QuanLySanPhamActivity, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
             }
         }
 
         // Sự kiện đè (long click) để xóa sản phẩm
-        lvSanPham.setOnItemLongClickListener { _, _, _, id ->
-            val idCuaItemBiDe = id.toInt()
+        lvSanPham.setOnItemLongClickListener { _, _, position, _ ->
+            val productToDelete = listProduct[position]
 
             androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm này không?")
+                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm '${productToDelete.name}' không?")
                 .setPositiveButton("Xóa") { _, _ ->
-                    // Gọi hàm xóa từ database
-                    dbHelper.deleteSanPham(idCuaItemBiDe)
-                    Toast.makeText(this, "Đã xóa sản phẩm!", Toast.LENGTH_SHORT).show()
+                    val request = DeleteProductRequest(productToDelete.id)
+                    RetrofitClient.instance.deleteProduct(request).enqueue(object : Callback<ProductResponse> {
+                        override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
+                            if (response.isSuccessful && response.body()?.success == true) {
+                                Toast.makeText(this@QuanLySanPhamActivity, "Đã xóa sản phẩm!", Toast.LENGTH_SHORT).show()
+                                lamMoiForm()
+                                hienThiDanhSach()
+                            } else {
+                                val msg = response.body()?.message ?: "Lỗi xóa sản phẩm"
+                                Toast.makeText(this@QuanLySanPhamActivity, msg, Toast.LENGTH_SHORT).show()
+                            }
+                        }
 
-                    // Xóa form và tải lại danh sách
-                    lamMoiForm()
-                    hienThiDanhSach()
+                        override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+                            Toast.makeText(this@QuanLySanPhamActivity, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 }
                 .setNegativeButton("Hủy", null)
                 .show()
 
-            true // Trả về true để hệ thống biết sự kiện "đè" đã xử lý xong, không kích hoạt nhầm sự kiện click bình thường
+            true
         }
     }
 
     private fun hienThiDanhSach() {
-        val cursor: Cursor = dbHelper.getAllSanPham()
-
-        val fromColumns = arrayOf(DatabaseHelper.COL_TEN_MON, DatabaseHelper.COL_GIA)
-        val toViews = intArrayOf(R.id.txtTenMon, R.id.txtGiaMon)
-
-        adapter = SimpleCursorAdapter(
-            this,
-            R.layout.item_san_pham,
-            cursor,
-            fromColumns,
-            toViews,
-            0
-        )
-
-        adapter.setViewBinder { view, cursorData, _ ->
-            if (view.id == R.id.txtGiaMon) {
-                val giaMon = cursorData.getDouble(cursorData.getColumnIndexOrThrow(DatabaseHelper.COL_GIA))
-                (view as TextView).text = "${String.format("%,.0f", giaMon)} VNĐ"
-                return@setViewBinder true
+        RetrofitClient.instance.getProductsList().enqueue(object : Callback<List<Product>> {
+            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    listProduct.clear()
+                    listProduct.addAll(response.body()!!)
+                    adapter.updateData(listProduct)
+                }
             }
-            false
-        }
 
-        lvSanPham.adapter = adapter
+            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
+                Toast.makeText(this@QuanLySanPhamActivity, "Lỗi tải danh sách: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun lamMoiForm() {
         edtTenMon.text.clear()
         edtGiaMon.text.clear()
         edtMoTa.text.clear()
-        imgProduct.setImageResource(android.R.drawable.ic_menu_gallery)
-        selectedImageUri = ""
         selectedId = -1
+    }
+
+    // Adapter nội bộ để hiển thị danh sách sản phẩm
+    private class SanPhamAdapter(private val context: Context, private var list: List<Product>) : BaseAdapter() {
+        override fun getCount(): Int = list.size
+        override fun getItem(position: Int): Any = list[position]
+        override fun getItemId(position: Int): Long = list[position].id.toLong()
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_san_pham, parent, false)
+            val product = list[position]
+
+            val txtTenMon = view.findViewById<TextView>(R.id.txtTenMon)
+            val txtGiaMon = view.findViewById<TextView>(R.id.txtGiaMon)
+
+            txtTenMon.text = product.name
+            txtGiaMon.text = "${String.format("%,.0f", product.price)} VNĐ"
+
+            return view
+        }
+
+        fun updateData(newList: List<Product>) {
+            this.list = newList
+            notifyDataSetChanged()
+        }
     }
 }

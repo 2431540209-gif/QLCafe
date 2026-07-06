@@ -87,9 +87,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         categories.add(TaskCategory("Đơn hàng", orderTasks))
 
         // 1. NHÓM SẢN PHẨM
-        val productTasks = mutableListOf(
-            TaskItem("xem_menu", "Danh mục thực đơn", android.R.drawable.ic_menu_view)
-        )
+        val productTasks = mutableListOf<TaskItem>()
         if (role == "manager") {
             productTasks.add(
                 TaskItem(
@@ -106,7 +104,9 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
                 )
             )
         }
-        categories.add(TaskCategory("Sản phẩm", productTasks))
+        if (productTasks.isNotEmpty()) {
+            categories.add(TaskCategory("Sản phẩm", productTasks))
+        }
 
         // 4. NHÓM LỊCH LÀM VIỆC
         val scheduleTasks = listOf(

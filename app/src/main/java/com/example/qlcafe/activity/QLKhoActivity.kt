@@ -17,11 +17,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.NguyenLieuAdapter
-import com.example.qlcafe.database.DatabaseHelper
+import com.example.qlcafe.api.RetrofitClient
+import com.example.qlcafe.models.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class QLKhoActivity : AppCompatActivity() {
 
-    private lateinit var dbHelper: DatabaseHelper
     private lateinit var rvNguyenLieu: RecyclerView
     private lateinit var adapter: NguyenLieuAdapter
 
@@ -35,8 +38,6 @@ class QLKhoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qlkho)
 
-        dbHelper = DatabaseHelper(this)
-
         // Khởi tạo các View
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val layoutNhapKho = findViewById<LinearLayout>(R.id.layoutNhapKho)
@@ -47,7 +48,11 @@ class QLKhoActivity : AppCompatActivity() {
         rvNguyenLieu = findViewById(R.id.rvNguyenLieu)
         rvNguyenLieu.layoutManager = LinearLayoutManager(this)
 
-        // Tải dữ liệu lên RecyclerView
+        // Khởi tạo adapter trống trước
+        adapter = NguyenLieuAdapter(emptyList())
+        rvNguyenLieu.adapter = adapter
+
+        // Tải dữ liệu lên RecyclerView từ API
         loadDanhSachKho()
 
         btnBack.setOnClickListener { finish() }
@@ -74,9 +79,17 @@ class QLKhoActivity : AppCompatActivity() {
     }
 
     private fun loadDanhSachKho() {
-        val list = dbHelper.getAllNguyenLieu()
-        adapter = NguyenLieuAdapter(list)
-        rvNguyenLieu.adapter = adapter
+        RetrofitClient.instance.getInventoryList().enqueue(object : Callback<List<NguyenLieu>> {
+            override fun onResponse(call: Call<List<NguyenLieu>>, response: Response<List<NguyenLieu>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    adapter.updateData(response.body()!!)
+                }
+            }
+
+            override fun onFailure(call: Call<List<NguyenLieu>>, t: Throwable) {
+                Toast.makeText(this@QLKhoActivity, "Lỗi tải kho: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun showDialogNhapXuatKho(isNhapKho: Boolean) {
@@ -117,39 +130,70 @@ class QLKhoActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val soLuong = soLuongStr.toInt()
-
-            if (soLuong <= 0) {
+            val soLuong = soLuongStr.toIntOrNull()
+            if (soLuong == null || soLuong <= 0) {
                 Toast.makeText(this, "Số lượng phải lớn hơn 0", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            btnConfirm.isEnabled = false
             if (isNhapKho) {
-                // XỬ LÝ NHẬP KHO
-                dbHelper.nhapKho(selectedNguyenLieu, soLuong)
-                Toast.makeText(this, "Nhập kho thành công!", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
+                // XỬ LÝ NHẬP KHO QUA API
+                val request = NhapXuatKhoRequest(selectedNguyenLieu, soLuong)
+                RetrofitClient.instance.nhapKho(request).enqueue(object : Callback<InventoryResponse> {
+                    override fun onResponse(call: Call<InventoryResponse>, response: Response<InventoryResponse>) {
+                        btnConfirm.isEnabled = true
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(this@QLKhoActivity, "Nhập kho thành công!", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                            loadDanhSachKho()
+                        } else {
+                            val msg = response.body()?.message ?: "Lỗi nhập kho"
+                            Toast.makeText(this@QLKhoActivity, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<InventoryResponse>, t: Throwable) {
+                        btnConfirm.isEnabled = true
+                        Toast.makeText(this@QLKhoActivity, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
 
             } else {
-                // XỬ LÝ XUẤT KHO
+                // XỬ LÝ XUẤT KHO QUA API
                 if (soLuong > 5) {
                     Toast.makeText(this, "Chỉ được xuất tối đa 5 đơn vị mỗi lần!", Toast.LENGTH_SHORT).show()
+                    btnConfirm.isEnabled = true
                     return@setOnClickListener
                 }
 
-                val status = dbHelper.xuatKho(selectedNguyenLieu, soLuong)
-                when (status) {
-                    1 -> {
-                        Toast.makeText(this, "Xuất kho thành công!", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
+                val request = NhapXuatKhoRequest(selectedNguyenLieu, soLuong)
+                RetrofitClient.instance.xuatKho(request).enqueue(object : Callback<InventoryResponse> {
+                    override fun onResponse(call: Call<InventoryResponse>, response: Response<InventoryResponse>) {
+                        btnConfirm.isEnabled = true
+                        if (response.isSuccessful) {
+                            val body = response.body()
+                            val status = body?.status ?: 0
+                            when (status) {
+                                1 -> {
+                                    Toast.makeText(this@QLKhoActivity, "Xuất kho thành công!", Toast.LENGTH_SHORT).show()
+                                    dialog.dismiss()
+                                    loadDanhSachKho()
+                                }
+                                -1 -> Toast.makeText(this@QLKhoActivity, "Lỗi: Không đủ số lượng trong kho!", Toast.LENGTH_SHORT).show()
+                                else -> Toast.makeText(this@QLKhoActivity, "Lỗi: Nguyên liệu chưa có trong kho!", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(this@QLKhoActivity, "Lỗi kết nối server!", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    -1 -> Toast.makeText(this, "Lỗi: Không đủ số lượng trong kho!", Toast.LENGTH_SHORT).show()
-                    0 -> Toast.makeText(this, "Lỗi: Nguyên liệu chưa có trong kho!", Toast.LENGTH_SHORT).show()
-                }
-            }
 
-            // Làm mới lại giao diện RecyclerView ngay lập tức
-            loadDanhSachKho()
+                    override fun onFailure(call: Call<InventoryResponse>, t: Throwable) {
+                        btnConfirm.isEnabled = true
+                        Toast.makeText(this@QLKhoActivity, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
         }
 
         dialog.show()
