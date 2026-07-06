@@ -65,4 +65,28 @@ interface ApiService {
 
     @GET("order_controller.php?action=get_dashboard_stats")
     fun getDashboardStats(): Call<DashboardStatsResponse>
+
+    // API Quản lý Sản phẩm
+    @GET("product_controller.php?action=get")
+    fun getProductsList(): Call<List<Product>>
+
+    @POST("product_controller.php?action=add")
+    fun addProduct(@Body request: AddProductRequest): Call<ProductResponse>
+
+    @POST("product_controller.php?action=update")
+    fun updateProduct(@Body request: UpdateProductRequest): Call<ProductResponse>
+
+    @POST("product_controller.php?action=delete")
+    fun deleteProduct(@Body request: DeleteProductRequest): Call<ProductResponse>
+
+    // API Quản lý Kho
+    @GET("inventory_controller.php?action=get")
+    fun getInventoryList(): Call<List<NguyenLieu>>
+
+    @POST("inventory_controller.php?action=nhap")
+    fun nhapKho(@Body request: NhapXuatKhoRequest): Call<InventoryResponse>
+
+    @POST("inventory_controller.php?action=xuat")
+    fun xuatKho(@Body request: NhapXuatKhoRequest): Call<InventoryResponse>
 }
+

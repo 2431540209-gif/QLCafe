@@ -39,7 +39,8 @@ data class Product(
     val name: String,
     val price: Double,
     val image_url: String?,
-    val category_id: Int?
+    val category_id: Int?,
+    val description: String? = null
 )
 
 data class ProductOrder(

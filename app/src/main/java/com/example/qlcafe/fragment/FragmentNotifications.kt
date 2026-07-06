@@ -62,7 +62,7 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
 
         // Load từ SQLite trước để tránh giật lag
         val dbHelper = DatabaseHelper(requireContext())
-        val cached = dbHelper.getCachedNotifications()
+        val cached = dbHelper.notificationDao.getCachedNotifications()
         val hiddenIds = sessionManager.getHiddenNotifications()
         listDuLieu.clear()
         listDuLieu.addAll(cached.filter { it.id !in hiddenIds })
@@ -79,7 +79,7 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
             override fun onResponse(call: Call<List<ThongBao>>, response: Response<List<ThongBao>>) {
                 if (response.isSuccessful && response.body() != null) {
                     val allNotifs = response.body()!!
-                    dbHelper.cacheNotifications(allNotifs)
+                    dbHelper.notificationDao.cacheNotifications(allNotifs)
                     val hiddenIds = sessionManager.getHiddenNotifications()
 
                     // Lọc bỏ những thông báo có ID nằm trong danh sách đã xóa
