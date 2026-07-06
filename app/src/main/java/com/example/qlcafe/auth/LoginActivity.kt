@@ -40,13 +40,24 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // XÓA FAKE DATABASE VÀ GỌI API THẬT
-            userRepository.login(inputPhone, inputPass) {
-                isSuccess, message, userInfo -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            // GỌI API THẬT ĐỂ ĐĂNG NHẬP
+            userRepository.login(inputPhone, inputPass) { isSuccess, message, userInfo ->
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
                 if (isSuccess && userInfo != null) {
-                    // Đăng nhập đúng máy chủ -> Lưu vô Session
-                    sessionManager.createLoginSession(userInfo.id, userInfo.username, userInfo.phone, userInfo.role)
+                    // Lấy thêm danh sách đặc quyền (nếu có) để phân quyền động trên giao diện
+                    val dacQuyen = userInfo.dacQuyen ?: ""
+
+                    // Đăng nhập thành công -> Lưu mọi thông tin vào SessionManager
+                    sessionManager.createLoginSession(
+                        userInfo.id,
+                        userInfo.username,
+                        userInfo.phone,
+                        userInfo.role,
+                        dacQuyen
+                    )
+
+                    // Chuyển màn hình
                     goToMainActivity()
                 }
             }

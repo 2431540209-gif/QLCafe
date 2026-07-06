@@ -12,6 +12,7 @@ import com.example.qlcafe.models.ThongBao
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    // Khai báo các DAO (Từ Phiên bản 2)
     val productDao = ProductDao(this)
     val notificationDao = NotificationDao(this)
     val nguyenLieuDao = NguyenLieuDao(this)
@@ -19,8 +20,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "coffee_shop_db"
-        // TĂNG VERSION LÊN 5: Để tạo bảng Thông báo và Stats
-        private const val DATABASE_VERSION = 5
+        // NÂNG CẤP VERSION LÊN 6: Để gộp chung tất cả các thay đổi của cả 2 nhánh
+        private const val DATABASE_VERSION = 6
+
+        // Cấu hình bảng User (Từ Phiên bản 1)
+        const val TABLE_USER = "User"
+        const val COL_USER_ID = "id"
+        const val COL_USER_NAME = "username"
+        const val COL_USER_PHONE = "phone"
+        const val COL_USER_PASSWORD = "password"
+        const val COL_USER_ROLE = "role"
+        const val COL_USER_DAC_QUYEN = "dac_quyen"
 
         // Cấu hình bảng Sản Phẩm
         const val TABLE_SAN_PHAM = "SanPham"
@@ -30,13 +40,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_MO_TA = "moTa"
         const val COL_HINH_ANH = "hinhAnh"
 
-        // Cấu hình bảng Nguyên Liệu
+        // Cấu hình bảng Nguyên Liệu (Từ Phiên bản 2)
         const val TABLE_NGUYEN_LIEU = "NguyenLieu"
         const val COL_NL_ID = "id"
         const val COL_NL_TEN = "tenNguyenLieu"
         const val COL_NL_SO_LUONG = "soLuong"
 
-        // Cấu hình bảng Thông báo
+        // Cấu hình bảng Thông báo (Từ Phiên bản 2)
         const val TABLE_THONG_BAO = "ThongBao"
         const val COL_TB_ID = "id"
         const val COL_TB_TYPE = "type"
@@ -45,14 +55,20 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_TB_DETAILS = "details"
         const val COL_TB_CREATED_AT = "created_at"
 
-        // Cấu hình bảng Thống kê Dashboard
+        // Cấu hình bảng Thống kê Dashboard (Từ Phiên bản 2)
         const val TABLE_DASHBOARD_STATS = "DashboardStats"
         const val COL_STATS_REVENUE = "total_revenue"
         const val COL_STATS_ORDERS = "total_orders"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createTableUser = "CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT)"
+        val createTableUser = ("CREATE TABLE $TABLE_USER ("
+                + "$COL_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "$COL_USER_NAME TEXT, "
+                + "$COL_USER_PHONE TEXT UNIQUE, "
+                + "$COL_USER_PASSWORD TEXT, "
+                + "$COL_USER_ROLE TEXT, "
+                + "$COL_USER_DAC_QUYEN TEXT)")
         db.execSQL(createTableUser)
 
         val createTableSanPham = ("CREATE TABLE $TABLE_SAN_PHAM ("
@@ -63,14 +79,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + "$COL_HINH_ANH TEXT)")
         db.execSQL(createTableSanPham)
 
-        // TẠO BẢNG NGUYÊN LIỆU
         val createTableNguyenLieu = ("CREATE TABLE $TABLE_NGUYEN_LIEU ("
                 + "$COL_NL_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "$COL_NL_TEN TEXT, "
                 + "$COL_NL_SO_LUONG INTEGER)")
         db.execSQL(createTableNguyenLieu)
 
-        // TẠO BẢNG THÔNG BÁO
         val createTableThongBao = ("CREATE TABLE $TABLE_THONG_BAO ("
                 + "$COL_TB_ID INTEGER PRIMARY KEY, "
                 + "$COL_TB_TYPE TEXT, "
@@ -80,7 +94,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + "$COL_TB_CREATED_AT TEXT)")
         db.execSQL(createTableThongBao)
 
-        // TẠO BẢNG DASHBOARD STATS
         val createTableStats = ("CREATE TABLE $TABLE_DASHBOARD_STATS ("
                 + "$COL_STATS_REVENUE REAL, "
                 + "$COL_STATS_ORDERS INTEGER)")
@@ -88,24 +101,32 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Cập nhật tuần tự để không làm mất dữ liệu của app bản cũ
         if (oldVersion < 3) {
             try {
                 db.execSQL("ALTER TABLE $TABLE_SAN_PHAM ADD COLUMN $COL_MO_TA TEXT")
                 db.execSQL("ALTER TABLE $TABLE_SAN_PHAM ADD COLUMN $COL_HINH_ANH TEXT")
             } catch (e: Exception) {
-                db.execSQL("DROP TABLE IF EXISTS $TABLE_SAN_PHAM")
-                onCreate(db)
+                // Bỏ qua lỗi nếu cột đã tồn tại
             }
         }
         if (oldVersion < 4) {
-            val createTableNguyenLieu = ("CREATE TABLE $TABLE_NGUYEN_LIEU ("
+            try {
+                db.execSQL("ALTER TABLE $TABLE_USER ADD COLUMN $COL_USER_PHONE TEXT")
+                db.execSQL("ALTER TABLE $TABLE_USER ADD COLUMN $COL_USER_DAC_QUYEN TEXT")
+            } catch (e: Exception) {
+                // Bỏ qua lỗi nếu cột đã tồn tại
+            }
+        }
+        if (oldVersion < 5) {
+            val createTableNguyenLieu = ("CREATE TABLE IF NOT EXISTS $TABLE_NGUYEN_LIEU ("
                     + "$COL_NL_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + "$COL_NL_TEN TEXT, "
                     + "$COL_NL_SO_LUONG INTEGER)")
             db.execSQL(createTableNguyenLieu)
         }
-        if (oldVersion < 5) {
-            val createTableThongBao = ("CREATE TABLE $TABLE_THONG_BAO ("
+        if (oldVersion < 6) {
+            val createTableThongBao = ("CREATE TABLE IF NOT EXISTS $TABLE_THONG_BAO ("
                     + "$COL_TB_ID INTEGER PRIMARY KEY, "
                     + "$COL_TB_TYPE TEXT, "
                     + "$COL_TB_TITLE TEXT, "
@@ -114,10 +135,64 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     + "$COL_TB_CREATED_AT TEXT)")
             db.execSQL(createTableThongBao)
 
-            val createTableStats = ("CREATE TABLE $TABLE_DASHBOARD_STATS ("
+            val createTableStats = ("CREATE TABLE IF NOT EXISTS $TABLE_DASHBOARD_STATS ("
                     + "$COL_STATS_REVENUE REAL, "
                     + "$COL_STATS_ORDERS INTEGER)")
             db.execSQL(createTableStats)
         }
+    }
+
+    // =========================================================
+    // CÁC HÀM XỬ LÝ DỮ LIỆU (Giữ lại từ Phiên bản 1)
+    // =========================================================
+
+    fun insertSanPham(tenMon: String, gia: Double, moTa: String, hinhAnh: String): Long {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_TEN_MON, tenMon)
+        values.put(COL_GIA, gia)
+        values.put(COL_MO_TA, moTa)
+        values.put(COL_HINH_ANH, hinhAnh)
+        return db.insert(TABLE_SAN_PHAM, null, values)
+    }
+
+    fun getAllSanPham(): Cursor {
+        val db = this.readableDatabase
+        val query = "SELECT $COL_ID AS _id, $COL_TEN_MON, $COL_GIA, $COL_MO_TA, $COL_HINH_ANH FROM $TABLE_SAN_PHAM"
+        return db.rawQuery(query, null)
+    }
+
+    fun updateSanPham(id: Int, tenMon: String, gia: Double, moTa: String, hinhAnh: String): Int {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_TEN_MON, tenMon)
+        values.put(COL_GIA, gia)
+        values.put(COL_MO_TA, moTa)
+        values.put(COL_HINH_ANH, hinhAnh)
+        return db.update(TABLE_SAN_PHAM, values, "$COL_ID=?", arrayOf(id.toString()))
+    }
+
+    fun deleteSanPham(id: Int): Int {
+        val db = this.writableDatabase
+        return db.delete(TABLE_SAN_PHAM, "$COL_ID=?", arrayOf(id.toString()))
+    }
+
+    fun updateLocalUserPermissions(phone: String, dacQuyen: String): Int {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_USER_DAC_QUYEN, dacQuyen)
+        return db.update(TABLE_USER, values, "$COL_USER_PHONE=?", arrayOf(phone))
+    }
+
+    fun getLocalUserPermissions(phone: String): String {
+        val db = this.readableDatabase
+        val query = "SELECT $COL_USER_DAC_QUYEN FROM $TABLE_USER WHERE $COL_USER_PHONE = ?"
+        val cursor = db.rawQuery(query, arrayOf(phone))
+        var dacQuyen = ""
+        if (cursor.moveToFirst()) {
+            dacQuyen = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_DAC_QUYEN)) ?: ""
+        }
+        cursor.close()
+        return dacQuyen
     }
 }

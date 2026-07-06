@@ -1,20 +1,27 @@
 package com.example.qlcafe.api
 
-// Dữ liệu Gửi lên (Request)
-data class RegisterRequest(val username: String, val phone: String, val password: String)
-data class LoginRequest(val phone: String, val password: String)
+import com.google.gson.annotations.SerializedName
+import com.example.qlcafe.models.UserInfo
 
-// Dữ liệu Trả về (Response)
-data class AuthResponse(
-        val success: Boolean,
-        val message: String,
-        val user: UserInfo? = null // Có thể rỗng nếu đăng nhập sai
+// --- Dữ liệu Gửi lên (Request) ---
+
+data class LoginRequest(
+        @SerializedName("phone") val phone: String,
+        @SerializedName("password") val password: String
 )
 
-data class UserInfo(
-        val id: Int,
-        val username: String,
-        val phone: String,
-        val birth: String,
-        val role: String
+data class RegisterRequest(
+        @SerializedName("username") val username: String,
+        @SerializedName("phone") val phone: String,
+        @SerializedName("password") val password: String,
+        @SerializedName("role") val role: String,
+        @SerializedName("dac_quyen") val dacQuyen: String
+)
+
+// --- Dữ liệu Trả về (Response) ---
+
+data class AuthResponse(
+        @SerializedName("success") val success: Boolean,
+        @SerializedName("message") val message: String?,
+        @SerializedName("user") val user: UserInfo? = null
 )
