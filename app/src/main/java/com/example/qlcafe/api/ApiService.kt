@@ -88,5 +88,14 @@ interface ApiService {
 
     @POST("inventory_controller.php?action=xuat")
     fun xuatKho(@Body request: NhapXuatKhoRequest): Call<InventoryResponse>
+    //API quản lý hệ thống
+    @GET("phan_quyen.php?action=get_permissions")
+    fun getPermissions(@Query("phone") phone: String): Call<PermissionResponse>
+
+    @POST("phan_quyen.php?action=update_permissions")
+    fun updatePermissions(@Body request: UpdatePermissionRequest): Call<UpdatePermissionResponse>
+
+    @GET("get_doanh_thu.php")
+    fun getDoanhThu(): Call<StatictisResponse>
 }
 

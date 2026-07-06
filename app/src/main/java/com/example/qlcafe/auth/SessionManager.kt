@@ -1,4 +1,4 @@
-package com.example.qlcafe.auth // Sửa lại package nếu của bạn khác
+package com.example.qlcafe.auth
 
 import android.content.Context
 import android.content.Intent
@@ -11,13 +11,14 @@ class SessionManager(var context: Context) {
     // 🕒 Cài đặt thời gian hết hạn: 30 phút (Tính bằng mili-giây: 30 * 60 * 1000)
     private val SESSION_EXPIRATION_TIME = 30 * 60 * 1000L
 
-    // Lưu thông tin khi Đăng nhập thành công
-    fun createLoginSession(id: Int, username: String, phone: String, role: String) {
+    // Lưu thông tin khi Đăng nhập thành công (Đã bao gồm dacQuyen)
+    fun createLoginSession(id: Int, username: String, phone: String, role: String, dacQuyen: String) {
         editor.putBoolean("IS_LOGGED_IN", true)
         editor.putInt("USER_ID", id)
         editor.putString("USERNAME", username)
         editor.putString("USER_PHONE", phone)
         editor.putString("USER_ROLE", role)
+        editor.putString("USER_DAC_QUYEN", dacQuyen)
 
         // Bắt đầu bấm giờ: Lưu lại thời điểm hiện tại
         editor.putLong("LAST_ACTIVE_TIME", System.currentTimeMillis())
@@ -51,13 +52,29 @@ class SessionManager(var context: Context) {
     fun getUserName(): String {
         return pref.getString("USERNAME", "Nhân Viên") ?: "Nhân Viên"
     }
+
     fun getUserRole(): String {
         return pref.getString("USER_ROLE", "employee") ?: "employee"
     }
+
     fun getUserId(): Int {
         // Trả về -1 nếu bị lỗi không tìm thấy ID
         return pref.getInt("USER_ID", -1)
     }
+
+    fun getUserPhone(): String {
+        return pref.getString("USER_PHONE", "") ?: ""
+    }
+
+    fun saveUserExtraPermissions(dacQuyen: String) {
+        editor.putString("USER_DAC_QUYEN", dacQuyen)
+        editor.apply()
+    }
+
+    fun getUserExtraPermissions(): String {
+        return pref.getString("USER_DAC_QUYEN", "") ?: ""
+    }
+
     // Hàm Đăng xuất (Dùng cho cả khi hết hạn hoặc khi người dùng tự bấm nút)
     fun logoutUser() {
         // Xóa sạch bách sành sanh bộ nhớ
@@ -78,6 +95,7 @@ class SessionManager(var context: Context) {
         editor.putString("hidden_notifications", setString)
         editor.apply()
     }
+
     fun getHiddenNotifications(): Set<Int> {
         val setString = pref.getString("hidden_notifications", "") ?: ""
         if (setString.isEmpty()) return emptySet()

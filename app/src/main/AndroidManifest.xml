@@ -46,7 +46,11 @@
         <activity
             android:name=".auth.RegisterActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".activity.StaffManagementActivity"
+            android:exported="false"
+            android:label="Quản Lý Nhân Viên"
+            android:theme="@style/Theme.QLCafe" />
         <activity
             android:name=".activity.QLKhoActivity"
             android:exported="false"
