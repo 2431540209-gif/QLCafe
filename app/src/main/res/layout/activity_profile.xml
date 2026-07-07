@@ -48,6 +48,10 @@
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Kho nguyên liệu " android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_box_24" app:drawableTint="#5856D6"/>
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView android:id="@+id/cardProduct" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Quản lý sản phẩm" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_checklist_24" app:drawableTint="#4CAF50"/>
+        </androidx.cardview.widget.CardView>
+
         <androidx.cardview.widget.CardView android:id="@+id/cardReceipt" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="12dp">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Đơn hàng" android:textColor="#1A1A1A" android:textSize="16sp" android:gravity="center_vertical" android:drawablePadding="16dp" app:drawableStartCompat="@drawable/outline_checklist_24" app:drawableTint="#007AFF"/>
         </androidx.cardview.widget.CardView>

@@ -20,6 +20,7 @@ import com.example.qlcafe.activity.MainActivity
 import com.example.qlcafe.activity.QLKhoActivity
 import com.example.qlcafe.activity.StaffActivity
 import com.example.qlcafe.activity.QuanLyDonHangActivity
+import com.example.qlcafe.activity.QuanLySanPhamActivity
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.utils.ThemeHelper.applyTheme
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -32,18 +33,62 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         // Ánh xạ các thành phần giao diện
         val cardPassword = view.findViewById<CardView>(R.id.cardPassword)
         val cardInventory = view.findViewById<CardView>(R.id.cardInventory)
+        val cardProduct = view.findViewById<CardView>(R.id.cardProduct)
         val cardReceipt = view.findViewById<CardView>(R.id.cardReceipt)
         val cardNotification = view.findViewById<CardView>(R.id.cardNotification)
         val cardSetting = view.findViewById<CardView>(R.id.cardSetting)
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
+        // Ánh xạ và hiển thị thông tin thực tế từ SessionManager
+        val tvEmail = view.findViewById<TextView>(R.id.tvEmail)
+        val tvID = view.findViewById<TextView>(R.id.tvID)
+
+        val username = sessionManager.getUserName()
+        val phone = sessionManager.getUserPhone()
+        val userId = sessionManager.getUserId()
+
+        tvEmail.text = "👤 Tên: $username ($phone)"
+        tvID.text = "🆔 Mã nhân viên: $userId"
+
+        // Phân quyền cho phần Thao tác nhanh (Ẩn/Hiện theo quyền hạn)
+        val userRole = sessionManager.getUserRole() ?: ""
+        val dacQuyenString = sessionManager.getUserExtraPermissions() ?: ""
+        val listQuyen = dacQuyenString.split(",").map { it.trim().lowercase() }
+        val isManagerOrAdmin = userRole.equals("QUAN_LY", ignoreCase = true) || userRole.equals("ADMIN", ignoreCase = true)
+
+        // 1. Kho nguyên liệu
+        if (isManagerOrAdmin || listQuyen.contains("ql_kho")) {
+            cardInventory.visibility = View.VISIBLE
+        } else {
+            cardInventory.visibility = View.GONE
+        }
+
+        // 2. Quản lý sản phẩm
+        if (isManagerOrAdmin || listQuyen.contains("ql_san_pham")) {
+            cardProduct.visibility = View.VISIBLE
+        } else {
+            cardProduct.visibility = View.GONE
+        }
+
+        // 3. Đơn hàng (yêu cầu quyền tao_don_hang)
+        if (isManagerOrAdmin || listQuyen.contains("tao_don_hang")) {
+            cardReceipt.visibility = View.VISIBLE
+        } else {
+            cardReceipt.visibility = View.GONE
+        }
+
         // Thiết lập sự kiện Click cho từng thẻ chức năng
         cardPassword.setOnClickListener { openChangePasswordDialog() }
-        
+
         cardInventory.setOnClickListener { 
             val intent = Intent(requireContext(), QLKhoActivity::class.java)
             val sessionManager = SessionManager(requireContext())
             intent.putExtra("ROLE", sessionManager.getUserRole())
+            startActivity(intent)
+        }
+
+        cardProduct.setOnClickListener {
+            val intent = Intent(requireContext(), QuanLySanPhamActivity::class.java)
             startActivity(intent)
         }
         
