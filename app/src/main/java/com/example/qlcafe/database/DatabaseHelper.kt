@@ -20,8 +20,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "coffee_shop_db"
-        // NÂNG CẤP VERSION LÊN 6: Để gộp chung tất cả các thay đổi của cả 2 nhánh
-        private const val DATABASE_VERSION = 6
+        // NÂNG CẤP VERSION LÊN 7: Để đảm bảo thêm cột phone và dac_quyen vào bảng User nếu bị thiếu
+        private const val DATABASE_VERSION = 7
 
         // Cấu hình bảng User (Từ Phiên bản 1)
         const val TABLE_USER = "User"
@@ -139,6 +139,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     + "$COL_STATS_REVENUE REAL, "
                     + "$COL_STATS_ORDERS INTEGER)")
             db.execSQL(createTableStats)
+        }
+        if (oldVersion < 7) {
+            try {
+                db.execSQL("ALTER TABLE $TABLE_USER ADD COLUMN $COL_USER_PHONE TEXT")
+            } catch (e: Exception) {
+                // Bỏ qua nếu cột đã tồn tại
+            }
+            try {
+                db.execSQL("ALTER TABLE $TABLE_USER ADD COLUMN $COL_USER_DAC_QUYEN TEXT")
+            } catch (e: Exception) {
+                // Bỏ qua nếu cột đã tồn tại
+            }
         }
     }
 

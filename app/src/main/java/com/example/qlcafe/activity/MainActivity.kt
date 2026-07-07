@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.qlcafe.R
 import com.example.qlcafe.api.ApiService
+import com.example.qlcafe.api.RetrofitClient
 import com.example.qlcafe.auth.SessionManager
 import com.example.qlcafe.fragment.*
 import com.example.qlcafe.models.PermissionResponse
@@ -17,8 +18,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,14 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        // Khởi tạo Retrofit kết nối tới Server API
-        // Lưu ý: Nếu trong project bạn đã có class RetrofitClient (như ở FragmentTrangChu),
-        // bạn có thể dùng RetrofitClient.instance thay vì khởi tạo chay ở đây để code tối ưu hơn.
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2/qlcafe_api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        apiService = retrofit.create(ApiService::class.java)
+        // Khởi tạo apiService thông qua class RetrofitClient dùng chung
+        apiService = RetrofitClient.instance
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 

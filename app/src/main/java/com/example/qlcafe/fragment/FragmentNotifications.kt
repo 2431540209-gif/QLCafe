@@ -37,7 +37,7 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
         val userRole = sessionManager.getUserRole()
 
         // Chỉ Quản lý mới thấy nút Tạo thông báo Sự Kiện
-        if (userRole == "admin" || userRole == "quan_ly"){
+        if (userRole == "ADMIN" || userRole == "quan_ly"){
             btnTaoThongBao.visibility = View.VISIBLE
             btnTaoThongBao.setOnClickListener { hienThiFormTaoThongBao() }
         } else {

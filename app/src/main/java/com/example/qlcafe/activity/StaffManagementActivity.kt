@@ -41,13 +41,17 @@ class StaffManagementActivity : AppCompatActivity() {
         dbHelper = DatabaseHelper(this)
         userRepository = UserRepository()
 
+        // Cập nhật tiêu đề Top Bar
+        val tvTitle = findViewById<TextView>(R.id.tvTitle)
+        tvTitle.text = "Quản lý nhân viên"
+
         edtUsername = findViewById(R.id.edtUsername)
         edtPassword = findViewById(R.id.edtPassword)
         spnRole = findViewById(R.id.spnRole)
         btnInsertUser = findViewById(R.id.btnInsertUser)
         btnUpdateUser = findViewById(R.id.btnUpdateUser)
         rvEmployees = findViewById(R.id.lvEmployees)
-        btnBack = findViewById(R.id.btnBackQuanLy)
+        btnBack = findViewById(R.id.btnBack)
 
         cbPermissionOrder = findViewById(R.id.cbPermissionOrder)
         cbPermissionProduct = findViewById(R.id.cbPermissionProduct)
@@ -84,7 +88,7 @@ class StaffManagementActivity : AppCompatActivity() {
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, rolesList)
         spnRole.adapter = spinnerAdapter
 
-        displayEmployeeList()
+        taiVaDongBoNhanVienTuServer()
         btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
@@ -118,13 +122,17 @@ class StaffManagementActivity : AppCompatActivity() {
                     values.put(DatabaseHelper.COL_USER_ROLE, role)
                     values.put(DatabaseHelper.COL_USER_DAC_QUYEN, permissions)
 
-                    val result = db.insert(DatabaseHelper.TABLE_USER, null, values)
-                    if (result > -1) {
-                        Toast.makeText(this, "Đã đồng bộ thành công lên hệ thống MySQL!", Toast.LENGTH_SHORT).show()
-                        clearForm()
-                        displayEmployeeList()
-                    } else {
-                        Toast.makeText(this, "Đã lưu trên Server nhưng trùng số điện thoại SQLite Local!", Toast.LENGTH_SHORT).show()
+                    try {
+                        val result = db.insertOrThrow(DatabaseHelper.TABLE_USER, null, values)
+                        if (result > -1) {
+                            Toast.makeText(this, "Đã đồng bộ thành công lên hệ thống MySQL!", Toast.LENGTH_SHORT).show()
+                            clearForm()
+                            displayEmployeeList()
+                        } else {
+                            Toast.makeText(this, "Lỗi: Không thể lưu nhân viên vào SQLite cục bộ!", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Lỗi SQLite Cục bộ: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     Toast.makeText(this, "Lỗi Server MySQL: $serverMessage", Toast.LENGTH_LONG).show()
@@ -178,14 +186,53 @@ class StaffManagementActivity : AppCompatActivity() {
     }
 
     private fun thucHienXoaNhanVienCucBo(phone: String) {
-        val db = dbHelper.writableDatabase
-        val rows = db.delete(DatabaseHelper.TABLE_USER, "${DatabaseHelper.COL_USER_PHONE} = ?", arrayOf(phone))
-        if (rows > 0) {
-            Toast.makeText(this, "Xóa tài khoản nhân viên thành công!", Toast.LENGTH_SHORT).show()
-            clearForm()
-            displayEmployeeList()
-        } else {
-            Toast.makeText(this, "Không thể xóa nhân viên trong cơ sở dữ liệu cục bộ!", Toast.LENGTH_SHORT).show()
+        userRepository.deleteUserFromServer(phone) { isSuccess, serverMessage ->
+            if (isSuccess) {
+                val db = dbHelper.writableDatabase
+                val rows = db.delete(DatabaseHelper.TABLE_USER, "${DatabaseHelper.COL_USER_PHONE} = ?", arrayOf(phone))
+                if (rows > 0) {
+                    Toast.makeText(this, "Đã xóa nhân viên trên cả Server và SQLite cục bộ!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Đã xóa trên Server nhưng không tìm thấy trong SQLite!", Toast.LENGTH_SHORT).show()
+                }
+                clearForm()
+                displayEmployeeList()
+            } else {
+                Toast.makeText(this, "Lỗi khi xóa nhân viên trên Server: $serverMessage", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun taiVaDongBoNhanVienTuServer() {
+        userRepository.getAllUsersFromServer { isSuccess, userList, message ->
+            if (isSuccess && userList != null) {
+                val db = dbHelper.writableDatabase
+                // Xóa toàn bộ dữ liệu cũ trong bảng User để đồng bộ mới
+                db.delete(DatabaseHelper.TABLE_USER, null, null)
+
+                // Duyệt qua danh sách lấy từ Server và lưu vào SQLite Local
+                for (user in userList) {
+                    val values = ContentValues()
+                    values.put(DatabaseHelper.COL_USER_ID, user.id)
+                    values.put(DatabaseHelper.COL_USER_NAME, user.username)
+                    values.put(DatabaseHelper.COL_USER_PHONE, user.phone)
+                    values.put(DatabaseHelper.COL_USER_PASSWORD, "") // Không trả về mật khẩu từ API
+                    values.put(DatabaseHelper.COL_USER_ROLE, user.role)
+                    values.put(DatabaseHelper.COL_USER_DAC_QUYEN, user.dacQuyen ?: "")
+
+                    try {
+                        db.insert(DatabaseHelper.TABLE_USER, null, values)
+                    } catch (e: Exception) {
+                        // Bỏ qua nếu có lỗi dòng đơn lẻ
+                    }
+                }
+                // Cập nhật giao diện sau khi đồng bộ thành công
+                displayEmployeeList()
+            } else {
+                Toast.makeText(this, "Lỗi tải nhân viên từ Server: $message", Toast.LENGTH_SHORT).show()
+                // Vẫn hiển thị từ SQLite local cũ làm phương án dự phòng
+                displayEmployeeList()
+            }
         }
     }
 
@@ -213,16 +260,22 @@ class StaffManagementActivity : AppCompatActivity() {
     private fun displayEmployeeList() {
         staffList.clear()
         val db = dbHelper.readableDatabase
-        val query = "SELECT ${DatabaseHelper.COL_USER_ID}, ${DatabaseHelper.COL_USER_NAME}, ${DatabaseHelper.COL_USER_PHONE}, ${DatabaseHelper.COL_USER_ROLE}, ${DatabaseHelper.COL_USER_DAC_QUYEN} FROM ${DatabaseHelper.TABLE_USER}"
+        val query = "SELECT * FROM ${DatabaseHelper.TABLE_USER}"
         val cursor = db.rawQuery(query, null)
+
+        val idIdx = cursor.getColumnIndex(DatabaseHelper.COL_USER_ID)
+        val nameIdx = cursor.getColumnIndex(DatabaseHelper.COL_USER_NAME)
+        val phoneIdx = cursor.getColumnIndex(DatabaseHelper.COL_USER_PHONE)
+        val roleIdx = cursor.getColumnIndex(DatabaseHelper.COL_USER_ROLE)
+        val dacQuyenIdx = cursor.getColumnIndex(DatabaseHelper.COL_USER_DAC_QUYEN)
 
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_NAME)) ?: "Nhân Viên"
-                val phone = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_PHONE)) ?: ""
-                val role = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_ROLE)) ?: ""
-                val dacQuyen = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_DAC_QUYEN)) ?: ""
+                val id = if (idIdx != -1) cursor.getInt(idIdx) else 0
+                val name = if (nameIdx != -1) cursor.getString(nameIdx) ?: "Nhân Viên" else "Nhân Viên"
+                val phone = if (phoneIdx != -1) cursor.getString(phoneIdx) ?: "" else ""
+                val role = if (roleIdx != -1) cursor.getString(roleIdx) ?: "" else ""
+                val dacQuyen = if (dacQuyenIdx != -1) cursor.getString(dacQuyenIdx) ?: "" else ""
 
                 staffList.add(UserInfo(id, name, phone, role, dacQuyen))
             } while (cursor.moveToNext())
