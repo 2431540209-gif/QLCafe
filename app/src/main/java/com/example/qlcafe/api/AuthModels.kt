@@ -25,3 +25,4 @@ data class AuthResponse(
         @SerializedName("message") val message: String?,
         @SerializedName("user") val user: UserInfo? = null
 )
+

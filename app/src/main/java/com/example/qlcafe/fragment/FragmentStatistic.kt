@@ -25,8 +25,13 @@ class FragmentStatistic : Fragment(R.layout.fragment_statistic) {
         tvThongKeNgay = view.findViewById(R.id.tvThongKeNgay)
         tvThongKeThang = view.findViewById(R.id.tvThongKeThang)
         tvThongKeNam = view.findViewById(R.id.tvThongKeNam)
-        val btnBackThongKe = view.findViewById<android.widget.ImageView>(R.id.btnBackThongKe)
-        btnBackThongKe.setOnClickListener {
+
+        // Cập nhật tiêu đề Top Bar
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle.text = "Báo Cáo Doanh Thu"
+
+        val btnBack = view.findViewById<android.widget.ImageView>(R.id.btnBack)
+        btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
         layDuLieuThongKeDoanhThu()

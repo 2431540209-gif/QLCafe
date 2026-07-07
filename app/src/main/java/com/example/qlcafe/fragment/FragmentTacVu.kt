@@ -92,9 +92,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         // =========================================================
         // 2. DANH MỤC: SẢN PHẨM
         // =========================================================
-        val productTasks = mutableListOf(
-            TaskItem("xem_menu", "Danh mục sản phẩm", android.R.drawable.ic_menu_view)
-        )
+        val productTasks = mutableListOf<TaskItem>()
         if (isManagerOrAdmin || listQuyen.contains("ql_san_pham")) {
             productTasks.add(TaskItem("ql_san_pham", "Quản lý sản phẩm", android.R.drawable.ic_menu_manage))
         }

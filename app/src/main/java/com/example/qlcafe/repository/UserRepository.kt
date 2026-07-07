@@ -5,6 +5,7 @@ import com.example.qlcafe.api.LoginRequest
 import com.example.qlcafe.api.RegisterRequest
 import com.example.qlcafe.api.RetrofitClient
 import com.example.qlcafe.models.UserInfo
+import com.example.qlcafe.models.AddAttendanceResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -62,6 +63,39 @@ class UserRepository {
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
                 onResult(false, "Mất kết nối mạng: ${t.message}", null)
+            }
+        })
+    }
+
+    fun getAllUsersFromServer(onResult: (Boolean, List<UserInfo>?, String) -> Unit) {
+        api.getUsers().enqueue(object : Callback<List<UserInfo>> {
+            override fun onResponse(call: Call<List<UserInfo>>, response: Response<List<UserInfo>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    onResult(true, response.body(), "Thành công")
+                } else {
+                    onResult(false, null, "Lỗi phản hồi từ máy chủ")
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserInfo>>, t: Throwable) {
+                onResult(false, null, t.message ?: "Mất kết nối server")
+            }
+        })
+    }
+
+    fun deleteUserFromServer(phone: String, onResult: (Boolean, String) -> Unit) {
+        val request = mapOf("phone" to phone)
+        api.deleteUser(request).enqueue(object : Callback<AddAttendanceResponse> {
+            override fun onResponse(call: Call<AddAttendanceResponse>, response: Response<AddAttendanceResponse>) {
+                if (response.isSuccessful && response.body() != null) {
+                    onResult(response.body()!!.success, response.body()!!.message)
+                } else {
+                    onResult(false, "Lỗi phản hồi từ máy chủ")
+                }
+            }
+
+            override fun onFailure(call: Call<AddAttendanceResponse>, t: Throwable) {
+                onResult(false, t.message ?: "Mất kết nối server")
             }
         })
     }
