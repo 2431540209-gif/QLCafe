@@ -3,7 +3,7 @@
 
     <style name="Theme.QLCafe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Bật tự động chuyển màu tối cho các thành phần UI có màu hardcode (Android 10+) -->
-        <item name="android:forceDarkAllowed">true</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
     <style name="CircleImageView" parent="">
         <item name="cornerFamily">rounded</item>

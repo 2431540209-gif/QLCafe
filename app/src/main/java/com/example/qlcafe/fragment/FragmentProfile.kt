@@ -200,6 +200,7 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             Toast.makeText(context, "Đã xác nhận: $type", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
+        dialog.findViewById<View>(R.id.dialog_root)?.let { applyTheme(it) }
         dialog.show()
     }
 
@@ -252,6 +253,9 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         container.addView(edtNewPass)
         container.addView(edtConfirmPass)
         builder.setView(container)
+
+        applyTheme(container)
+        applyTheme(tvTitle)
 
         // Các nút hành động
         builder.setPositiveButton("Cập nhật") { dialog, _ ->
