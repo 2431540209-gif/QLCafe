@@ -22,6 +22,7 @@ import com.example.qlcafe.activity.StaffActivity
 import com.example.qlcafe.activity.QuanLyDonHangActivity
 import com.example.qlcafe.auth.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.qlcafe.utils.ThemeHelper.applyTheme
 
 class FragmentProfile : Fragment(R.layout.activity_profile) {
 
@@ -158,6 +159,7 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             Toast.makeText(context, "Đã xác nhận: $type", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
+        dialog.findViewById<View>(R.id.dialog_root)?.let { applyTheme(it) }
         dialog.show()
     }
 
@@ -211,6 +213,9 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
         container.addView(edtConfirmPass)
         builder.setView(container)
 
+        applyTheme(container)
+        applyTheme(tvTitle)
+
         // Các nút hành động
         builder.setPositiveButton("Cập nhật") { dialog, _ ->
             val current = edtCurrentPass.text.toString().trim()
@@ -254,45 +259,5 @@ class FragmentProfile : Fragment(R.layout.activity_profile) {
             dp,
             resources.displayMetrics
         ).toInt()
-    }
-
-    private fun applyTheme(view: View) {
-        val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-        
-        val bgColor = if (isNight) Color.parseColor("#121212") else Color.parseColor("#F2F5F9")
-        val cardBgColor = if (isNight) Color.parseColor("#1E1E1E") else Color.WHITE
-        val textColor = if (isNight) Color.parseColor("#E0E0E0") else Color.parseColor("#1A1A1A")
-        val subTextColor = if (isNight) Color.parseColor("#888888") else Color.parseColor("#666666")
-
-        // Nền của ScrollView
-        view.setBackgroundColor(bgColor)
-
-        // Đổi màu các TextView ID & Email
-        view.findViewById<TextView>(R.id.tvEmail)?.setTextColor(textColor)
-        view.findViewById<TextView>(R.id.tvID)?.setTextColor(subTextColor)
-        
-        // Duyệt đệ quy đổi màu CardView và các TextView tiêu đề/nội dung
-        if (view is ViewGroup) {
-            fun traverse(v: View) {
-                if (v is CardView) {
-                    v.setCardBackgroundColor(cardBgColor)
-                }
-                if (v is TextView) {
-                    if (v.id != R.id.tvID && v.id != R.id.tvEmail) {
-                        if (v.text == "Thao tác nhanh" || v.text == "Hồ sơ cá nhân") {
-                            v.setTextColor(if (v.text == "Hồ sơ cá nhân") textColor else subTextColor)
-                        } else {
-                            v.setTextColor(textColor)
-                        }
-                    }
-                }
-                if (v is ViewGroup) {
-                    for (i in 0 until v.childCount) {
-                        traverse(v.getChildAt(i))
-                    }
-                }
-            }
-            traverse(view)
-        }
     }
 }
