@@ -21,12 +21,10 @@ class FragmentStatistic : Fragment(R.layout.fragment_statistic) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ánh xạ các TextView từ layout mới
         tvThongKeNgay = view.findViewById(R.id.tvThongKeNgay)
         tvThongKeThang = view.findViewById(R.id.tvThongKeThang)
         tvThongKeNam = view.findViewById(R.id.tvThongKeNam)
 
-        // Cập nhật tiêu đề Top Bar
         val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
         tvTitle.text = "Báo Cáo Doanh Thu"
 

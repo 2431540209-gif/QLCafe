@@ -98,10 +98,10 @@ interface ApiService {
     @GET("get_doanh_thu.php")
     fun getDoanhThu(): Call<StatictisResponse>
 
-    @GET("get_users.php")
+    @GET("phan_quyen.php?action=get_users")
     fun getUsers(): Call<List<UserInfo>>
 
-    @POST("delete_user.php")
+    @POST("phan_quyen.php?action=delete_user")
     fun deleteUser(@Body request: Map<String, String>): Call<AddAttendanceResponse>
 }
 

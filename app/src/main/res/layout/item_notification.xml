@@ -1,4 +1,5 @@
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,7 +13,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Icon thông báo (Ví dụ: Hình ly cafe) -->
         <ImageView
             android:id="@+id/imgIcon"
             android:layout_width="40dp"
@@ -21,7 +21,6 @@
             android:background="#FFF3E0"
             android:padding="8dp"/>
 
-        <!-- Tiêu đề -->
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
@@ -33,7 +32,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <!-- Nội dung chi tiết -->
         <TextView
             android:id="@+id/txtContent"
             android:layout_width="wrap_content"
@@ -46,7 +44,6 @@
             android:textColor="#555555"
             android:textSize="14sp" />
 
-        <!-- Thời gian (Nằm góc phải trên cùng) -->
         <TextView
             android:id="@+id/txtTime"
             android:layout_width="wrap_content"

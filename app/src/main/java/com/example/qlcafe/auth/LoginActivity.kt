@@ -40,15 +40,13 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // GỌI API THẬT ĐỂ ĐĂNG NHẬP
+            // gọi api
             userRepository.login(inputPhone, inputPass) { isSuccess, message, userInfo ->
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
                 if (isSuccess && userInfo != null) {
-                    // Lấy thêm danh sách đặc quyền (nếu có) để phân quyền động trên giao diện
-                    val dacQuyen = userInfo.dacQuyen ?: ""
 
-                    // Đăng nhập thành công -> Lưu mọi thông tin vào SessionManager
+                    val dacQuyen = userInfo.dacQuyen ?: ""
                     sessionManager.createLoginSession(
                         userInfo.id,
                         userInfo.username,
@@ -56,8 +54,6 @@ class LoginActivity : AppCompatActivity() {
                         userInfo.role,
                         dacQuyen
                     )
-
-                    // Chuyển màn hình
                     goToMainActivity()
                 }
             }
@@ -67,6 +63,6 @@ class LoginActivity : AppCompatActivity() {
     private fun goToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish() // Hủy luôn màn hình Login để bấm nút Back điện thoại không quay lại được
+        finish()
     }
 }

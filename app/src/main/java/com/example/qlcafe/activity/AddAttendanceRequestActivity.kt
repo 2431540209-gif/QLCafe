@@ -29,7 +29,7 @@ class AddAttendanceRequestActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_attendance_request) // Nhớ đổi đúng tên file XML của bạn
+        setContentView(R.layout.activity_add_attendance_request)
         setupTopBar("Thêm yêu cầu bổ sung")
 
         sessionManager = SessionManager(this)
