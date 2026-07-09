@@ -6,6 +6,8 @@ import com.example.qlcafe.api.RegisterRequest
 import com.example.qlcafe.api.RetrofitClient
 import com.example.qlcafe.models.UserInfo
 import com.example.qlcafe.models.AddAttendanceResponse
+import com.example.qlcafe.models.UpdatePermissionRequest
+import com.example.qlcafe.models.UpdatePermissionResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +23,7 @@ class UserRepository {
         permissions: String,
         onResult: (Boolean, String) -> Unit
     ) {
-        // Đã truyền đầy đủ role và permissions vào đối tượng request gửi đi
+        // truyền đầy đủ role và permissions vào đối tượng request gửi đi
         val request = RegisterRequest(username, phone, password, role, permissions)
 
         api.registerUser(request).enqueue(object : Callback<AuthResponse> {
@@ -95,6 +97,26 @@ class UserRepository {
             }
 
             override fun onFailure(call: Call<AddAttendanceResponse>, t: Throwable) {
+                onResult(false, t.message ?: "Mất kết nối server")
+            }
+        })
+    }
+
+    fun updatePermissionsFromServer(phone: String, permissions: String, onResult: (Boolean, String) -> Unit) {
+        val request = UpdatePermissionRequest(phone, permissions)
+        api.updatePermissions(request).enqueue(object : Callback<UpdatePermissionResponse> {
+            override fun onResponse(
+                call: Call<UpdatePermissionResponse>,
+                response: Response<UpdatePermissionResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    onResult(response.body()!!.success, response.body()!!.message)
+                } else {
+                    onResult(false, "Lỗi phản hồi từ máy chủ")
+                }
+            }
+
+            override fun onFailure(call: Call<UpdatePermissionResponse>, t: Throwable) {
                 onResult(false, t.message ?: "Mất kết nối server")
             }
         })

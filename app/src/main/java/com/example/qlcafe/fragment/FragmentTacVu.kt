@@ -33,25 +33,19 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_task, container, false)
 
-        // Ánh xạ RecyclerView chính
         rvMainTasks = view.findViewById(R.id.rvMainTasks)
         rvMainTasks.layoutManager = LinearLayoutManager(requireContext())
 
-        // Khởi tạo bộ quản lý phiên đăng nhập
         sessionManager = SessionManager(requireContext())
 
-        // Lấy vai trò và đặc quyền của người dùng (Đồng bộ với CSDL MySQL)
         val userRole = sessionManager.getUserRole() ?: ""
         val dacQuyenString = sessionManager.getUserExtraPermissions() ?: ""
 
-        // Lấy danh sách danh mục tác vụ động dựa vào phân quyền
         val taskData = getTaskListByPermissions(userRole, dacQuyenString)
 
-        // Nạp dữ liệu vào Adapter
         val adapter = TaskCategoryAdapter(taskData, this)
         rvMainTasks.adapter = adapter
 
-        // Thiết lập tiêu đề cho thanh top bar
         val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
         tvTitle?.text = "Tác vụ"
         val btnBack = view.findViewById<View>(R.id.btnBack)
@@ -60,24 +54,14 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         return view
     }
 
-    /**
-     * Hàm phân quyền và sắp xếp thứ tự danh mục tác vụ (Sử dụng logic mới)
-     */
     private fun getTaskListByPermissions(role: String, dacQuyenStr: String): List<TaskCategory> {
         val categories = mutableListOf<TaskCategory>()
 
-        // Cắt chuỗi quyền thành danh sách, đưa về chữ thường và xóa khoảng trắng thừa
         val listQuyen = dacQuyenStr.split(",").map { it.trim().lowercase() }
-
-        // Kiểm tra nếu thuộc cấp điều hành hệ thống (ADMIN hoặc QUAN_LY)
         val isManagerOrAdmin = role.equals("QUAN_LY", ignoreCase = true) || role.equals("ADMIN", ignoreCase = true)
 
-        // =========================================================
-        // 1. DANH MỤC: ĐƠN HÀNG
-        // =========================================================
         val orderTasks = mutableListOf<TaskItem>()
 
-        // Thỏa mãn là Quản lý/Admin HOẶC chuỗi đặc quyền chứa 'tao_don_hang'
         if (isManagerOrAdmin || listQuyen.contains("tao_don_hang")) {
             orderTasks.add(TaskItem("tao_don_hang", "Tạo đơn hàng mới", android.R.drawable.ic_menu_add))
         }
@@ -89,9 +73,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
             categories.add(TaskCategory("Đơn hàng", orderTasks))
         }
 
-        // =========================================================
-        // 2. DANH MỤC: SẢN PHẨM
-        // =========================================================
+        // 2. danh mục sản phẩm
         val productTasks = mutableListOf<TaskItem>()
         if (isManagerOrAdmin || listQuyen.contains("ql_san_pham")) {
             productTasks.add(TaskItem("ql_san_pham", "Quản lý sản phẩm", android.R.drawable.ic_menu_manage))
@@ -101,9 +83,7 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         }
         categories.add(TaskCategory("Sản phẩm", productTasks))
 
-        // =========================================================
-        // 3. DANH MỤC: LỊCH LÀM VIỆC
-        // =========================================================
+        // 3. Danh mục: lich làm việc
         val scheduleTasks = listOf(
             TaskItem("lich_chung", "Lịch làm việc chung", android.R.drawable.ic_menu_my_calendar),
             TaskItem("dang_ky_lich", "Đăng ký lịch làm việc", android.R.drawable.ic_menu_day),
@@ -111,13 +91,11 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         )
         categories.add(TaskCategory("Lịch làm việc", scheduleTasks))
 
-        // =========================================================
-        // 4. DANH MỤC: QUẢN LÝ HỆ THỐNG
-        // =========================================================
+        // 4. danh mục quản lý hệ thống.
         if (isManagerOrAdmin || listQuyen.contains("ql_he_thong")) {
             val adminTasks = listOf(
                 TaskItem("ql_nhan_vien", "Quản lý nhân viên", android.R.drawable.ic_menu_agenda),
-                TaskItem("ql_hoa_don", "Thống kê hóa đơn", android.R.drawable.ic_menu_report_image)
+                TaskItem("ql_hoa_don", "Báo cáo doanh thu", android.R.drawable.ic_menu_report_image)
             )
             categories.add(TaskCategory("Quản lý hệ thống", adminTasks))
         }
@@ -125,9 +103,6 @@ class FragmentTacVu : Fragment(), TaskChildAdapter.OnTaskClickListener {
         return categories
     }
 
-    /**
-     * Xử lý sự kiện click vào từng ô tác vụ con
-     */
     override fun onTaskClick(item: TaskItem) {
         when (item.id) {
             "tao_don_hang" -> {

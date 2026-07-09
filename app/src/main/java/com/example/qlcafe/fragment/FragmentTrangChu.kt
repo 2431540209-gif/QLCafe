@@ -58,11 +58,9 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
         val tvEmployeeName = view.findViewById<TextView>(R.id.tvEmployeeName)
         val tvRoleName = view.findViewById<TextView>(R.id.tvRoleName)
 
-        // Ánh xạ UI
         tvSoDoanhThu = view.findViewById(R.id.tvsodoanhthu)
         tvSoDonHang = view.findViewById(R.id.tvsodonhang)
 
-        // Tự động đổi chữ tiêu đề card từ "Tổng doanh thu" sang "Doanh thu hôm nay"
         view.findViewById<TextView>(R.id.tvdoanhthu)?.text = "Doanh thu hôm nay"
 
         tvEmployeeName.text = sessionManager.getUserName()
@@ -79,8 +77,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
-
-        // SỰ KIỆN: Khi click vào Card doanh thu sẽ nhảy sang màn hình thống kê
+        // click vô thì nhảy sao doanh thu
         val cardDoanhThu = view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardDoanhThu)
         cardDoanhThu?.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -88,8 +85,6 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
                 .addToBackStack(null) // Cho phép bấm nút Back để quay lại Trang Chủ
                 .commit()
         }
-
-        // Tự động load dữ liệu lần đầu tiên
         loadThongBaoMoiNhatTrenTrangChu(view)
         loadDashboardStats()
     }

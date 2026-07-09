@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun dongBoQuyenTuServer() {
-        // ĐÃ FIX LỖI: Lấy chính xác số điện thoại (Phone) thay vì lấy nhầm chuỗi đặc quyền
+
         val userPhone = sessionManager.getUserPhone() ?: ""
         if (userPhone.isEmpty()) return
 
@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<PermissionResponse>, t: Throwable) {
-                // Có thể tắt Toast này đi trong môi trường release để tránh spam thông báo khi rớt mạng
                 Toast.makeText(this@MainActivity, "Không thể cập nhật quyền hạn từ máy chủ", Toast.LENGTH_SHORT).show()
             }
         })

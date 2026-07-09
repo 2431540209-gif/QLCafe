@@ -8,7 +8,7 @@ class SessionManager(var context: Context) {
     private val pref: SharedPreferences = context.getSharedPreferences("QLCafeSession", Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor = pref.edit()
 
-    // 🕒 Cài đặt thời gian hết hạn: 30 phút (Tính bằng mili-giây: 30 * 60 * 1000)
+    // Cài đặt thời gian
     private val SESSION_EXPIRATION_TIME = 30 * 60 * 1000L
 
     // Lưu thông tin khi Đăng nhập thành công (Đã bao gồm dacQuyen)
@@ -26,23 +26,20 @@ class SessionManager(var context: Context) {
         editor.apply()
     }
 
-    // Kiểm tra xem còn hạn hay không (Thường gọi lúc mới mở app)
+    // Kiểm tra xem còn hạn hay không
     fun isLoggedIn(): Boolean {
         val isLoggedIn = pref.getBoolean("IS_LOGGED_IN", false)
         if (!isLoggedIn) return false // Chưa đăng nhập thì cút luôn
 
-        // Lấy thời gian lần cuối truy cập ra
         val lastActiveTime = pref.getLong("LAST_ACTIVE_TIME", 0)
         val currentTime = System.currentTimeMillis()
 
-        // Phép tính: Hiện tại - Quá khứ > 30 phút ?
+        // công thức
         if (currentTime - lastActiveTime > SESSION_EXPIRATION_TIME) {
-            // Đã quá 30 phút -> Hết hạn! Xóa sạch dữ liệu và trả về false
             logoutUser()
             return false
         } else {
-            // Chưa tới 30 phút -> Vẫn còn hạn.
-            // Cập nhật lại mốc thời gian mới để gia hạn thêm 30 phút nữa (Tính từ lúc này)
+            // Cập nhật lại mốc thời gian mới để gia hạn thêm 30 phút nữa
             editor.putLong("LAST_ACTIVE_TIME", currentTime)
             editor.apply()
             return true
@@ -58,7 +55,6 @@ class SessionManager(var context: Context) {
     }
 
     fun getUserId(): Int {
-        // Trả về -1 nếu bị lỗi không tìm thấy ID
         return pref.getInt("USER_ID", -1)
     }
 
@@ -75,15 +71,12 @@ class SessionManager(var context: Context) {
         return pref.getString("USER_DAC_QUYEN", "") ?: ""
     }
 
-    // Hàm Đăng xuất (Dùng cho cả khi hết hạn hoặc khi người dùng tự bấm nút)
     fun logoutUser() {
-        // Xóa sạch bách sành sanh bộ nhớ
         editor.clear()
         editor.apply()
 
-        // Đá người dùng về thẳng trang Login
         val intent = Intent(context, LoginActivity::class.java)
-        // Dòng cờ này giúp xóa hết các trang cũ đang mở, ngăn người dùng bấm nút "Back" quay lại
+        // Dòng này giúp xóa hết các trang cũ đang mở, ngăn người dùng bấm nút "Back" quay lại
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
     }

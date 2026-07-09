@@ -156,20 +156,26 @@ class StaffManagementActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val db = dbHelper.writableDatabase
-            val values = ContentValues()
-            values.put(DatabaseHelper.COL_USER_PHONE, phone)
-            values.put(DatabaseHelper.COL_USER_ROLE, role)
-            values.put(DatabaseHelper.COL_USER_DAC_QUYEN, permissions)
-            if (passwordNew.isNotEmpty()) {
-                values.put(DatabaseHelper.COL_USER_PASSWORD, passwordNew)
-            }
+            userRepository.updatePermissionsFromServer(selectedUserPhone, permissions) { isSuccess, serverMessage ->
+                if (isSuccess) {
+                    val db = dbHelper.writableDatabase
+                    val values = ContentValues()
+                    values.put(DatabaseHelper.COL_USER_PHONE, phone)
+                    values.put(DatabaseHelper.COL_USER_ROLE, role)
+                    values.put(DatabaseHelper.COL_USER_DAC_QUYEN, permissions)
+                    if (passwordNew.isNotEmpty()) {
+                        values.put(DatabaseHelper.COL_USER_PASSWORD, passwordNew)
+                    }
 
-            val rows = db.update(DatabaseHelper.TABLE_USER, values, "${DatabaseHelper.COL_USER_PHONE} = ?", arrayOf(selectedUserPhone))
-            if (rows > 0) {
-                Toast.makeText(this, "Cập nhật thông tin nhân viên thành công!", Toast.LENGTH_SHORT).show()
-                clearForm()
-                displayEmployeeList()
+                    val rows = db.update(DatabaseHelper.TABLE_USER, values, "${DatabaseHelper.COL_USER_PHONE} = ?", arrayOf(selectedUserPhone))
+                    if (rows > 0) {
+                        Toast.makeText(this, "Cập nhật thông tin nhân viên thành công!", Toast.LENGTH_SHORT).show()
+                        clearForm()
+                        displayEmployeeList()
+                    }
+                } else {
+                    Toast.makeText(this, "Lỗi Server MySQL: $serverMessage", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

@@ -1,7 +1,5 @@
 package com.example.qlcafe.models
 
-
-// Khuôn gửi lên (Chỉ cần ID nhân viên là đủ, giờ giấc PHP tự lo)
 data class ChamCongRequest(
     val user_id: Int
 )
