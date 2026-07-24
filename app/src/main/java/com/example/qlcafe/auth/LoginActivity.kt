@@ -29,7 +29,6 @@ class LoginActivity : AppCompatActivity() {
         val etUsername = findViewById<TextInputEditText>(R.id.etUsername)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
-        // val tvGoToRegister = findViewById<TextView>(R.id.tvGoToRegister)
 
         btnLogin.setOnClickListener {
             val inputPhone = etUsername.text.toString().trim()

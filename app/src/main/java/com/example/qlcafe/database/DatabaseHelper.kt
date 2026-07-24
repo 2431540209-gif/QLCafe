@@ -23,7 +23,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // NÂNG CẤP VERSION LÊN 7: Để đảm bảo thêm cột phone và dac_quyen vào bảng User nếu bị thiếu
         private const val DATABASE_VERSION = 7
 
-        // Cấu hình bảng User (Từ Phiên bản 1)
+        //bảng User
         const val TABLE_USER = "User"
         const val COL_USER_ID = "id"
         const val COL_USER_NAME = "username"
@@ -32,7 +32,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_USER_ROLE = "role"
         const val COL_USER_DAC_QUYEN = "dac_quyen"
 
-        // Cấu hình bảng Sản Phẩm
+        //bảng Sản Phẩm
         const val TABLE_SAN_PHAM = "SanPham"
         const val COL_ID = "id"
         const val COL_TEN_MON = "tenMon"
@@ -40,13 +40,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_MO_TA = "moTa"
         const val COL_HINH_ANH = "hinhAnh"
 
-        // Cấu hình bảng Nguyên Liệu (Từ Phiên bản 2)
+        //bảng Nguyên Liệu
         const val TABLE_NGUYEN_LIEU = "NguyenLieu"
         const val COL_NL_ID = "id"
         const val COL_NL_TEN = "tenNguyenLieu"
         const val COL_NL_SO_LUONG = "soLuong"
 
-        // Cấu hình bảng Thông báo (Từ Phiên bản 2)
+        //bảng Thông báo
         const val TABLE_THONG_BAO = "ThongBao"
         const val COL_TB_ID = "id"
         const val COL_TB_TYPE = "type"
@@ -55,7 +55,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_TB_DETAILS = "details"
         const val COL_TB_CREATED_AT = "created_at"
 
-        // Cấu hình bảng Thống kê Dashboard (Từ Phiên bản 2)
+        //bảng Thống kê Dashboard
         const val TABLE_DASHBOARD_STATS = "DashboardStats"
         const val COL_STATS_REVENUE = "total_revenue"
         const val COL_STATS_ORDERS = "total_orders"
@@ -152,59 +152,5 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 // Bỏ qua nếu cột đã tồn tại
             }
         }
-    }
-
-    // =========================================================
-    // CÁC HÀM XỬ LÝ DỮ LIỆU (Giữ lại từ Phiên bản 1)
-    // =========================================================
-
-    fun insertSanPham(tenMon: String, gia: Double, moTa: String, hinhAnh: String): Long {
-        val db = this.writableDatabase
-        val values = ContentValues()
-        values.put(COL_TEN_MON, tenMon)
-        values.put(COL_GIA, gia)
-        values.put(COL_MO_TA, moTa)
-        values.put(COL_HINH_ANH, hinhAnh)
-        return db.insert(TABLE_SAN_PHAM, null, values)
-    }
-
-    fun getAllSanPham(): Cursor {
-        val db = this.readableDatabase
-        val query = "SELECT $COL_ID AS _id, $COL_TEN_MON, $COL_GIA, $COL_MO_TA, $COL_HINH_ANH FROM $TABLE_SAN_PHAM"
-        return db.rawQuery(query, null)
-    }
-
-    fun updateSanPham(id: Int, tenMon: String, gia: Double, moTa: String, hinhAnh: String): Int {
-        val db = this.writableDatabase
-        val values = ContentValues()
-        values.put(COL_TEN_MON, tenMon)
-        values.put(COL_GIA, gia)
-        values.put(COL_MO_TA, moTa)
-        values.put(COL_HINH_ANH, hinhAnh)
-        return db.update(TABLE_SAN_PHAM, values, "$COL_ID=?", arrayOf(id.toString()))
-    }
-
-    fun deleteSanPham(id: Int): Int {
-        val db = this.writableDatabase
-        return db.delete(TABLE_SAN_PHAM, "$COL_ID=?", arrayOf(id.toString()))
-    }
-
-    fun updateLocalUserPermissions(phone: String, dacQuyen: String): Int {
-        val db = this.writableDatabase
-        val values = ContentValues()
-        values.put(COL_USER_DAC_QUYEN, dacQuyen)
-        return db.update(TABLE_USER, values, "$COL_USER_PHONE=?", arrayOf(phone))
-    }
-
-    fun getLocalUserPermissions(phone: String): String {
-        val db = this.readableDatabase
-        val query = "SELECT $COL_USER_DAC_QUYEN FROM $TABLE_USER WHERE $COL_USER_PHONE = ?"
-        val cursor = db.rawQuery(query, arrayOf(phone))
-        var dacQuyen = ""
-        if (cursor.moveToFirst()) {
-            dacQuyen = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_DAC_QUYEN)) ?: ""
-        }
-        cursor.close()
-        return dacQuyen
     }
 }

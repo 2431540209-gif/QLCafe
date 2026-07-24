@@ -43,7 +43,7 @@ class AddAttendanceRequestActivity : AppCompatActivity() {
         val edtNote = findViewById<TextInputEditText>(R.id.edtNote)
         val btnSubmitRequest = findViewById<MaterialButton>(R.id.btnSubmitRequest)
 
-        // 2. Nạp dữ liệu cho 2 cái Spinner (AutoCompleteTextView)
+        // 2. Nạp dữ liệu cho 2 cái Spinner
         val branches = arrayOf("VAA CAFE Cơ sở 1", "VAA CAFE Cơ sở 2")
         val branchAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, branches)
         spnBranch.setAdapter(branchAdapter)
@@ -76,7 +76,6 @@ class AddAttendanceRequestActivity : AppCompatActivity() {
             val note = edtNote.text.toString().trim()
             val userId = sessionManager.getUserId()
 
-            // Kiểm tra rỗng
             if (branch.isEmpty() || shift.isEmpty() || dateForDatabase.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin có dấu thời gian!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

@@ -13,6 +13,7 @@ import com.example.qlcafe.adapter.StaffAdapter
 import com.example.qlcafe.database.DatabaseHelper
 import com.example.qlcafe.models.UserInfo
 import com.example.qlcafe.repository.UserRepository
+import com.example.qlcafe.utils.setupTopBar
 
 class StaffManagementActivity : AppCompatActivity() {
 
@@ -37,13 +38,10 @@ class StaffManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_staff_management)
-
+        setupTopBar("Quản lý nhân viên")
         dbHelper = DatabaseHelper(this)
         userRepository = UserRepository()
-
-        // Cập nhật tiêu đề Top Bar
-        val tvTitle = findViewById<TextView>(R.id.tvTitle)
-        tvTitle.text = "Quản lý nhân viên"
+        
 
         edtUsername = findViewById(R.id.edtUsername)
         edtPassword = findViewById(R.id.edtPassword)

@@ -8,7 +8,7 @@ class SessionManager(var context: Context) {
     private val pref: SharedPreferences = context.getSharedPreferences("QLCafeSession", Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor = pref.edit()
 
-    // Cài đặt thời gian
+    // Cài đặt thời gian 30p
     private val SESSION_EXPIRATION_TIME = 30 * 60 * 1000L
 
     // Lưu thông tin khi Đăng nhập thành công (Đã bao gồm dacQuyen)
@@ -19,9 +19,7 @@ class SessionManager(var context: Context) {
         editor.putString("USER_PHONE", phone)
         editor.putString("USER_ROLE", role)
         editor.putString("USER_DAC_QUYEN", dacQuyen)
-
-        // Bắt đầu bấm giờ: Lưu lại thời điểm hiện tại
-        editor.putLong("LAST_ACTIVE_TIME", System.currentTimeMillis())
+        editor.putLong("LAST_ACTIVE_TIME", System.currentTimeMillis())  //Lưu lại thời gian hiện tại
 
         editor.apply()
     }
@@ -29,12 +27,10 @@ class SessionManager(var context: Context) {
     // Kiểm tra xem còn hạn hay không
     fun isLoggedIn(): Boolean {
         val isLoggedIn = pref.getBoolean("IS_LOGGED_IN", false)
-        if (!isLoggedIn) return false // Chưa đăng nhập thì cút luôn
+        if (!isLoggedIn) return false
 
         val lastActiveTime = pref.getLong("LAST_ACTIVE_TIME", 0)
         val currentTime = System.currentTimeMillis()
-
-        // công thức
         if (currentTime - lastActiveTime > SESSION_EXPIRATION_TIME) {
             logoutUser()
             return false

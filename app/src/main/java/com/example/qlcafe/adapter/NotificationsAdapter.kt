@@ -10,10 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.models.ThongBao
 import com.example.qlcafe.R
 
-// Chú ý: Tui thêm một cái onItemClick (Hàm callback) để bắt sự kiện chạm vào 1 dòng
 class NotificationsAdapter(
     private val dsThongBao: MutableList<ThongBao>,
-    private val userRole: String, // Thêm quyền
+    //private val userRole: String, // Thêm quyền
     private val onItemClick: (ThongBao) -> Unit,
     private val onItemLongClick: (Int, ThongBao)-> Unit
 ) : RecyclerView.Adapter<NotificationsAdapter.ThongBaoViewHolder>() {

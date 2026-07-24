@@ -35,16 +35,15 @@ class FragmentLichChung : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         sessionManager = SessionManager(requireContext())
-        
         // Ánh xạ các View từ XML
         rvLich = view.findViewById(R.id.rvLich)
         tvEmpty = view.findViewById(R.id.tvEmpty)
         progressBar = view.findViewById(R.id.progressBar)
         
         rvLich.layoutManager = LinearLayoutManager(requireContext())
-        
+
         // Thiết lập tiêu đề thanh điều hướng Top Bar
         val appCompatActivity = requireActivity() as? AppCompatActivity
         appCompatActivity?.setupTopBar("Lịch Làm Việc")

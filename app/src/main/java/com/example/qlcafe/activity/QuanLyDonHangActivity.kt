@@ -8,6 +8,7 @@ import com.example.qlcafe.R
 import com.example.qlcafe.fragment.DanhSachDonHangFragment
 import com.example.qlcafe.fragment.FragmentTaoDonHang
 import com.example.qlcafe.models.OrderViewModel
+import com.example.qlcafe.utils.setupTopBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class QuanLyDonHangActivity : AppCompatActivity() {
@@ -17,7 +18,7 @@ class QuanLyDonHangActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quanlydh)
-
+        setupTopBar("Danh sách đơn hàng")
         // Khởi tạo ViewModel ở cấp độ Activity để tồn tại xuyên suốt các tab và khi quay lại từ Task
         viewModel = ViewModelProvider(this)[OrderViewModel::class.java]
 

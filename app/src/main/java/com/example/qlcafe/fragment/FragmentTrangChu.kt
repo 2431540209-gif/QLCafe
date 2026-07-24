@@ -50,6 +50,12 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
             Toast.makeText(requireContext(), "Bạn phải cấp quyền Vị trí mới chấm công được!", Toast.LENGTH_SHORT).show()
         }
     }
+    private fun daCapQuyenViTri(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +63,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
         sessionManager = SessionManager(requireContext())
         val tvEmployeeName = view.findViewById<TextView>(R.id.tvEmployeeName)
         val tvRoleName = view.findViewById<TextView>(R.id.tvRoleName)
+        val role = sessionManager.getUserRole()
 
         tvSoDoanhThu = view.findViewById(R.id.tvsodoanhthu)
         tvSoDonHang = view.findViewById(R.id.tvsodonhang)
@@ -64,14 +71,13 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
         view.findViewById<TextView>(R.id.tvdoanhthu)?.text = "Doanh thu hôm nay"
 
         tvEmployeeName.text = sessionManager.getUserName()
-        val role = sessionManager.getUserRole()
         tvRoleName.text = role.replaceFirstChar { it.uppercase() }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         val btnChamCongHome = view.findViewById<Button>(R.id.btnChamCongHome)
         btnChamCongHome.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (daCapQuyenViTri()) {
                 thucHienKiemTraDeChamCong()
             } else {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -191,6 +197,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
     }
 
     @Suppress("DEPRECATION")
+    @SuppressLint("MissingPermission")
     private fun kiemTraWiFiHopLe(): Boolean {
         val context = requireContext().applicationContext
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -248,7 +255,7 @@ class FragmentTrangChu : Fragment(R.layout.fragment_main) {
                                 val body = response.body()!!
                                 if (body.success) {
                                     Toast.makeText(requireContext(), body.message, Toast.LENGTH_LONG).show()
-                                    // Bấm chấm công xong load lại để hiện thông báo mới luôn cho nóng!
+                                    // Bấm chấm công xong load lại để hiện thông báo mới
                                     view?.let { loadThongBaoMoiNhatTrenTrangChu(it) }
                                 } else {
                                     Toast.makeText(requireContext(), "Lỗi: ${body.message}", Toast.LENGTH_LONG).show()
