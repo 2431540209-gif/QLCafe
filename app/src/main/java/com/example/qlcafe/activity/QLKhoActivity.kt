@@ -19,6 +19,7 @@ import com.example.qlcafe.R
 import com.example.qlcafe.adapter.NguyenLieuAdapter
 import com.example.qlcafe.api.RetrofitClient
 import com.example.qlcafe.models.*
+import com.example.qlcafe.utils.setupTopBar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,7 +38,7 @@ class QLKhoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qlkho)
-
+        setupTopBar("Quản Lý Kho")
         // Khởi tạo các View
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val layoutNhapKho = findViewById<LinearLayout>(R.id.layoutNhapKho)

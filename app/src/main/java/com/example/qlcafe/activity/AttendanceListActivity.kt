@@ -36,9 +36,8 @@ class AttendanceListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Tái sử dụng lại đúng file giao diện XML cũ, không cần thiết kế lại!
         setContentView(R.layout.fragment_attendance_request_list)
-        setupTopBar("Danh sách yêu cầu") // Hàm của bạn giữ nguyên nè
+        setupTopBar("Danh sách yêu cầu")
 
         // Thay requireContext() thành chữ 'this'
         sessionManager = SessionManager(this)

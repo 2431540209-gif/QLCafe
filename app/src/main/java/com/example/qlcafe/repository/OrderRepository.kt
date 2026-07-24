@@ -4,10 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.qlcafe.models.Order
 
-/**
- * Singleton Repository để lưu trữ đơn hàng trong bộ nhớ.
- * Dữ liệu sẽ tồn tại xuyên suốt phiên làm việc của ứng dụng, ngay cả khi đóng Activity.
- */
 object OrderRepository {
     private val orderList = mutableListOf<Order>()
     private val _orders = MutableLiveData<MutableList<Order>>(orderList)

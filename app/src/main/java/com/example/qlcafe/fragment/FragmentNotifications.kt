@@ -12,20 +12,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qlcafe.R
 import com.example.qlcafe.adapter.NotificationsAdapter
-import com.example.qlcafe.api.RetrofitClient
 import com.example.qlcafe.database.DatabaseHelper
 import com.example.qlcafe.auth.SessionManager
-import com.example.qlcafe.models.AddAttendanceResponse
 import com.example.qlcafe.models.ThongBao
+import com.example.qlcafe.repository.NotificationRepository
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class FragmentNotifications : Fragment(R.layout.fragment_notification) {
     private lateinit var adapter: NotificationsAdapter
     private lateinit var sessionManager: SessionManager
+    private val repository = NotificationRepository()
     private var listDuLieu = mutableListOf<ThongBao>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,10 +41,10 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
             btnTaoThongBao.visibility = View.GONE
         }
 
-        adapter = NotificationsAdapter(listDuLieu, userRole,
+        adapter = NotificationsAdapter(listDuLieu,
             onItemClick = { thongBaoDuocClick -> hienThiChiTiet(thongBaoDuocClick) },
             onItemLongClick = { viTri, thongBao ->
-                if (userRole == "quan_ly"|| userRole == "admin") {
+                if (userRole == "quan_ly"|| userRole == "ADMIN") {
                     // Manager: Hiện Dialog Xóa vĩnh viễn (Server)
                     hienThiDialogXoa(viTri, thongBao)
                 } else {
@@ -69,52 +66,44 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
         adapter.notifyDataSetChanged()
         view.findViewById<View>(R.id.layoutEmpty)?.visibility = if (listDuLieu.isEmpty()) View.VISIBLE else View.GONE
 
-        // Kéo dữ liệu từ XAMPP về
         layDanhSachThongBao()
     }
 
     private fun layDanhSachThongBao() {
         val dbHelper = DatabaseHelper(requireContext())
-        RetrofitClient.instance.getNotifications().enqueue(object : Callback<List<ThongBao>> {
-            override fun onResponse(call: Call<List<ThongBao>>, response: Response<List<ThongBao>>) {
-                if (response.isSuccessful && response.body() != null) {
-                    val allNotifs = response.body()!!
-                    dbHelper.notificationDao.cacheNotifications(allNotifs)
-                    val hiddenIds = sessionManager.getHiddenNotifications()
+        repository.getNotifications { success, data, message ->
+            if (success && data != null) {
+                dbHelper.notificationDao.cacheNotifications(data)
+                val hiddenIds = sessionManager.getHiddenNotifications()
 
-                    // Lọc bỏ những thông báo có ID nằm trong danh sách đã xóa
-                    listDuLieu.clear()
-                    listDuLieu.addAll(allNotifs.filter { it.id !in hiddenIds })
+                // Lọc bỏ những thông báo có ID nằm trong danh sách đã xóa
+                listDuLieu.clear()
+                listDuLieu.addAll(data.filter { it.id !in hiddenIds })
 
-                    adapter.notifyDataSetChanged()
-                    view?.findViewById<View>(R.id.layoutEmpty)?.visibility = if (listDuLieu.isEmpty()) View.VISIBLE else View.GONE
-                }
-            }
-            override fun onFailure(call: Call<List<ThongBao>>, t: Throwable) {
+                adapter.notifyDataSetChanged()
+                view?.findViewById<View>(R.id.layoutEmpty)?.visibility = if (listDuLieu.isEmpty()) View.VISIBLE else View.GONE
+            } else {
                 if (listDuLieu.isEmpty()) {
-                    Toast.makeText(requireContext(), "Lỗi mạng: ${t.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
     }
+
     private fun hienThiDialogXoa(viTri: Int, thongBao: ThongBao) {
         AlertDialog.Builder(requireContext())
             .setTitle("Xóa thông báo")
             .setMessage("Bạn có chắc chắn muốn xóa vĩnh viễn thông báo này khỏi hệ thống?")
             .setPositiveButton("Xóa") { _, _ ->
-                val request = mapOf("id" to thongBao.id)
-                RetrofitClient.instance.deleteNotification(request).enqueue(object : Callback<AddAttendanceResponse> {
-                    override fun onResponse(call: Call<AddAttendanceResponse>, response: Response<AddAttendanceResponse>) {
-                        if (response.isSuccessful) {
-                            listDuLieu.removeAt(viTri)
-                            adapter.notifyItemRemoved(viTri)
-                            Toast.makeText(requireContext(), "Đã xóa thông báo!", Toast.LENGTH_SHORT).show()
-                        }
+                repository.deleteNotification(thongBao.id) { success, message ->
+                    if (success) {
+                        listDuLieu.removeAt(viTri)
+                        adapter.notifyItemRemoved(viTri)
+                        Toast.makeText(requireContext(), "Đã xóa thông báo!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Lỗi khi xóa: $message", Toast.LENGTH_SHORT).show()
                     }
-                    override fun onFailure(call: Call<AddAttendanceResponse>, t: Throwable) {
-                        Toast.makeText(requireContext(), "Lỗi khi xóa: ${t.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
+                }
             }
             .setNegativeButton("Hủy", null)
             .show()
@@ -177,20 +166,17 @@ class FragmentNotifications : Fragment(R.layout.fragment_notification) {
             btnGui.text = "Đang gửi..."
 
             val thongBaoMoi = ThongBao(type = "EVENT", title = tieuDe, short_content = moTa, details = chiTiet)
-
-            RetrofitClient.instance.addNotification(thongBaoMoi).enqueue(object : Callback<AddAttendanceResponse> {
-                override fun onResponse(call: Call<AddAttendanceResponse>, response: Response<AddAttendanceResponse>) {
+            repository.addNotification(thongBaoMoi) { success, message ->
+                if (success) {
                     Toast.makeText(requireContext(), "Đã phát thông báo sự kiện!", Toast.LENGTH_SHORT).show()
                     bottomSheet.dismiss()
                     layDanhSachThongBao() // Tải lại danh sách mới
-                }
-
-                override fun onFailure(call: Call<AddAttendanceResponse>, t: Throwable) {
+                } else {
                     btnGui.isEnabled = true
                     btnGui.text = "Gửi Thông Báo"
-                    Toast.makeText(requireContext(), "Lỗi mạng!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Lỗi: $message", Toast.LENGTH_SHORT).show()
                 }
-            })
+            }
         }
         bottomSheet.show()
     }
